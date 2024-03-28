@@ -26,27 +26,34 @@ export default function Feed({
     const [feedPosts, setFeedPosts] = useState([]);
     const [noMorePosts, setNoMorePosts] = useState(false);
     const [firstRender, setFirstRender] = useState(true);
-    const [ref, setRef] = useState(useRef(null));
     const [loadingTop, setLoadingTop] = useState(true);
-    const [topOffset, setTopOffset] = useState(0);
     const [allowScrollToTop, setAllowScrollToTop] = useState(false);
     const [noMoreTopPosts, setNoMoreTopPosts] = useState(false);
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(20); // must be bigger tha maxPosts
     const maxPosts = 25;
     const toRemove = 15; // Must be smaller than maxPosts
+    const [previousPosts, setPreviousPosts] = useState([]);
 
     const refreshFeedPosts =  (reset, fromTop) =>
     {
-        let finalOffset = reset ? 0 : (fromTop ? topOffset : offset);
+        let finalOffset = reset ? 0 : (offset);
         let finalFeedPosts = reset ? [] : feedPosts;
 
-        if (reset) {
+        if (reset)
+        {
             setFeedPosts([]);
             setNoMorePosts(false);
             setNoMoreTopPosts(false);
             setAllowScrollToTop(false);
-            setTopOffset(0);
+        }
+
+        if (fromTop)
+        {
+            onNewTopPosts(finalOffset);
+            setIsLoading(false);
+            setLoadingTop(false);
+            return;
         }
 
         if (!posts)
@@ -56,27 +63,13 @@ export default function Feed({
                 getAllHashtagPosts(hashtag, finalOffset, limit)
                 .then((data) =>
                 {
-                    if (!fromTop)
-                    {
-                        onNewBottomPosts(data, finalFeedPosts, finalOffset);
-                    }
-                    else
-                    {
-                        onNewTopPosts(data, finalFeedPosts, finalOffset);
-                    }
+                    onNewBottomPosts(data, finalFeedPosts, finalOffset);
                 })
                 .catch((error) =>
                 {
                     console.log(error);
-
-                    if(!fromTop)
-                    {
-                        setIsLoading(false);
-                    }
-                    else
-                    {
-                        setLoadingTop(false);
-                    }
+                    setIsLoading(false);
+                    setLoadingTop(false);
                 });
             }
             else if (currentUser)
@@ -86,27 +79,13 @@ export default function Feed({
                     getAllUserPosts(currentUser.id, finalOffset, limit)
                     .then((data) =>
                     {
-                        if (!fromTop)
-                        {
-                            onNewBottomPosts(data, finalFeedPosts, finalOffset);
-                        }
-                        else
-                        {
-                            onNewTopPosts(data, finalFeedPosts, finalOffset);
-                        }
+                        onNewBottomPosts(data, finalFeedPosts, finalOffset);
                     })
                     .catch((error) =>
                     {
                         console.log(error);
-
-                        if(!fromTop)
-                        {
-                            setIsLoading(false);
-                        }
-                        else
-                        {
-                            setLoadingTop(false);
-                        }
+                        setIsLoading(false);
+                        setLoadingTop(false);
                     });
                 }
                 else if (feedUserId && currentUser.id !== feedUserId)
@@ -114,27 +93,13 @@ export default function Feed({
                     getAllUserPosts(feedUserId, finalOffset, limit)
                     .then((data) =>
                     {
-                        if (!fromTop)
-                        {
-                            onNewBottomPosts(data, finalFeedPosts, finalOffset);
-                        }
-                        else
-                        {
-                            onNewTopPosts(data, finalFeedPosts, finalOffset);
-                        }
+                        onNewBottomPosts(data, finalFeedPosts, finalOffset);
                     })
                     .catch((error) =>
                     {
                         console.log(error);
-
-                        if(!fromTop)
-                        {
-                            setIsLoading(false);
-                        }
-                        else
-                        {
-                            setLoadingTop(false);
-                        }
+                        setIsLoading(false);
+                        setLoadingTop(false);
                     });
                 }
                 else if (!isInProfile && feedUsername && currentUser.username === feedUsername)
@@ -142,27 +107,13 @@ export default function Feed({
                     getFollowedUsersPost(currentUser.id, finalOffset, limit)
                     .then((data) =>
                     {
-                        if (!fromTop)
-                        {
-                            onNewBottomPosts(data, finalFeedPosts, finalOffset);
-                        }
-                        else
-                        {
-                            onNewTopPosts(data, finalFeedPosts, finalOffset);
-                        }
+                        onNewBottomPosts(data, finalFeedPosts, finalOffset);
                     })
                     .catch((error) =>
                     {
                         console.log(error);
-
-                        if(!fromTop)
-                        {
-                            setIsLoading(false);
-                        }
-                        else
-                        {
-                            setLoadingTop(false);
-                        }
+                        setIsLoading(false);
+                        setLoadingTop(false);
                     });
                 }
             }
@@ -173,42 +124,21 @@ export default function Feed({
                     getAllUserPosts(feedUserId, finalOffset, limit)
                     .then((data) =>
                     {
-                        if (!fromTop)
-                        {
-                            onNewBottomPosts(data, finalFeedPosts, finalOffset);
-                        }
-                        else
-                        {
-                            onNewTopPosts(data, finalFeedPosts, finalOffset);
-                        }
+                        onNewBottomPosts(data, finalFeedPosts, finalOffset);
                     })
                     .catch((error) =>
                     {
                         console.log(error);
-
-                        if(!fromTop)
-                        {
-                            setIsLoading(false);
-                        }
-                        else
-                        {
-                            setLoadingTop(false);
-                        }
+                        setIsLoading(false);
+                        setLoadingTop(false);
                     });
                 }
             }
         }
         else
         {
-            if (!fromTop)
-            {
-                setIsLoading(false);
-            }
-            else
-            {
-                setLoadingTop(false);
-            }
-
+            setIsLoading(false);
+            setLoadingTop(false);
             setFeedPosts(posts);
         }
 
@@ -221,11 +151,11 @@ export default function Feed({
 
         if (data.length + finalFeedPosts.length > maxPosts)
         {
+            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
             finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
             finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
-            let newTopOffset = (offset - limit - limit + (maxPosts - limit)) < 0 ? 0 : (offset - limit - limit + (maxPosts - limit));
-            setTopOffset(newTopOffset);
             setAllowScrollToTop(true);
+            setNoMoreTopPosts(false);
         }
         else
         {
@@ -244,42 +174,40 @@ export default function Feed({
         setLoadingTop(false);
     }
 
-    const onNewTopPosts = (data, finalFeedPosts, finalOffset) =>
+    const onNewTopPosts = (finalOffset) =>
     {
-        let finalToSetFeedPosts = finalFeedPosts;
+        let finalToSetFeedPosts = feedPosts;
 
-        if (data.length + finalFeedPosts.length > maxPosts)
+        if (previousPosts.length === 0)
         {
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, (limit));
-            finalToSetFeedPosts = data.concat(finalToSetFeedPosts);
+            setNoMoreTopPosts(true);
+            setAllowScrollToTop(false);
+            return;
+        }
 
-            if (noMoreTopPosts)
-            {
-                setOffset(topOffset - limit - limit);
-            }
-            else
-            {
-                setOffset(topOffset - limit - limit);
-            }
+        let toAdd = previousPosts.slice(previousPosts.length - limit);
+        let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
+        setPreviousPosts(newPreviousPosts);
 
+        if (toAdd.length + feedPosts.length > maxPosts)
+        {
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
+            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+            setOffset(prevOffset => prevOffset - toRemove - toRemove);
             setNoMorePosts(false);
         }
         else
         {
-            finalToSetFeedPosts = data.concat(finalToSetFeedPosts);
+            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
         }
 
         setFeedPosts(finalToSetFeedPosts);
 
-        if (topOffset <= 0 || data.length < limit)
+        if (previousPosts.length === 0)
         {
             setNoMoreTopPosts(true);
             setAllowScrollToTop(false);
         }
-
-        setTopOffset((finalOffset - limit) < 0 ? 0 : (finalOffset - limit));
-        setLoadingTop(false);
-        setIsLoading(false);
     }
 
     useEffect(() => {
@@ -296,14 +224,23 @@ export default function Feed({
         }
     }, [refreshFeed, refreshFeedPosts]);
 
-    window.onscroll = () => {
-        if ((window.innerHeight + document.documentElement.scrollTop) >= document.documentElement.offsetHeight) {
-            if (!noMorePosts && !isLoading) {
-                setIsLoading(true);
-                refreshFeedPosts(false, false);
+    useEffect(() => {
+        const handleScroll = () => {
+            if ((window.innerHeight + document.documentElement.scrollTop) >= document.documentElement.offsetHeight) {
+                if (!noMorePosts && !isLoading) {
+                    setIsLoading(true);
+                    refreshFeedPosts(false, false);
+                }
             }
         }
-    }
+
+        window.addEventListener('scroll', handleScroll);
+
+        // Clean up the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        }
+    }, [noMorePosts, isLoading, refreshFeedPosts]);
 
     return (
         <>
@@ -323,8 +260,7 @@ export default function Feed({
                             {/*<button className={'load-previous-posts-button'} onClick={() => {*/}
                             {/*    setLoadingTop(true);*/}
                             {/*    refreshFeedPosts(false, true);*/}
-                            {/*}}>Load previous posts*/}
-                            {/*</button>*/}
+                            {/*}}>Load previous posts</button>*/}
                         </div>
                     )}
 
