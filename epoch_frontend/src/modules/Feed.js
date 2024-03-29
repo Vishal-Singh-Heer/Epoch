@@ -169,40 +169,52 @@ export default function Feed({
         setLoadingTop(false);
     }
 
-    useEffect(() => {
+    // useEffect(() => {
+    //
+    //     if (!('IntersectionObserver' in window)) {
+    //         // IntersectionObserver not supported, handle gracefully
+    //         return;
+    //     }
+    //
+    //
+    //     const options = {
+    //         root: null,
+    //         rootMargin: '0px',
+    //         threshold: 0.1 // Percentage of the target element that should be visible to trigger the callback
+    //     };
+    //
+    //     const observer = new IntersectionObserver((entries) => {
+    //         if (entries[0].isIntersecting) {
+    //             // User has scrolled to the bottom
+    //             if (!noMorePosts && !isLoading) {
+    //                 setIsLoading(true);
+    //                 refreshFeedPosts(false, false);
+    //             }
+    //         }
+    //     }, options);
+    //
+    //     if (bottomElementRef.current) {
+    //         observer.observe(bottomElementRef.current);
+    //     }
+    //
+    //     return () => {
+    //         if (bottomElementRef.current) {
+    //             observer.unobserve(bottomElementRef.current);
+    //         }
+    //     };
+    // }, [noMorePosts, isLoading, refreshFeedPosts]);
 
-        if (!('IntersectionObserver' in window)) {
-            // IntersectionObserver not supported, handle gracefully
-            return;
-        }
-
-
-        const options = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1 // Percentage of the target element that should be visible to trigger the callback
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                // User has scrolled to the bottom
-                if (!noMorePosts && !isLoading) {
-                    setIsLoading(true);
-                    refreshFeedPosts(false, false);
-                }
+    const handleScroll = () => {
+        if (bottomElementRef.current && bottomElementRef.current.getBoundingClientRect().top < window.innerHeight) {
+            if (!noMorePosts && !isLoading) {
+                setIsLoading(true);
+                refreshFeedPosts(false, false);
             }
-        }, options);
-
-        if (bottomElementRef.current) {
-            observer.observe(bottomElementRef.current);
         }
+    }
 
-        return () => {
-            if (bottomElementRef.current) {
-                observer.unobserve(bottomElementRef.current);
-            }
-        };
-    }, [noMorePosts, isLoading, refreshFeedPosts]);
+    document.addEventListener('scroll', handleScroll);
+
 
 
     const onNewTopPosts = (finalOffset) =>
