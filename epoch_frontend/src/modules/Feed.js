@@ -4,7 +4,6 @@ import {Spinner} from "./Spinner";
 import Post from "./Post";
 import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts} from '../services/post.js'
 import {useRef} from "react";
-import 'intersection-observer';
 
 export default function Feed({
                                  feedUsername,
