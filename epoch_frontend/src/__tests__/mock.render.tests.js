@@ -52,6 +52,14 @@ const mockPost = {
     votes_by_usernames: [],
 }
 
+// At the beginning of your test file
+global.IntersectionObserver = class IntersectionObserver {
+  constructor(callback, options) {}
+  observe(target) {}
+  unobserve(target) {}
+  disconnect() {}
+};
+
 
 const username = v4().substring(0, 20);
 const password = "ThisIsAValidPassword1!";
