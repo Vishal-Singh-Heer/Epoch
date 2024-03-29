@@ -177,6 +177,13 @@ export default function Feed({
     }
 
     useEffect(() => {
+
+        if (!('IntersectionObserver' in window)) {
+            // IntersectionObserver not supported, handle gracefully
+            return;
+        }
+
+
         const options = {
             root: null,
             rootMargin: '0px',
