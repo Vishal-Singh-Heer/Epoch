@@ -50,7 +50,6 @@ function Profile() {
     const [deleteAccountErrorPrompt, setDeleteAccountErrorPrompt] = useState("");
     const [deletingAccount, setDeletingAccount] = useState(false);
 
-
     const {transform: inTransformDelete} = useSpring({
         transform: `translateY(${showDeleteAccountPopup ? 0 : 100}vh)`,
         config: {duration: 300},
@@ -205,6 +204,7 @@ function Profile() {
     }, [setIsFollowing, setIsFollowingPrompt, viewedId, user]);
 
     const fetchProfileFollowData = () => {
+        setIsLoading(true);
         if (isCurrentUser) {
             profileFollowNetwork("self")
                 .then(data => {
