@@ -587,39 +587,45 @@ const renderCaptionWithHighlights = (toRender) => {
     }, [post.votes, postViewer]);
 
     useEffect(() => {
-        if (favorited && postViewer)
-        {
+        if (favorited && postViewer) {
             let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedFavoritedByUsernameList.push({username:postViewer.username, user_id:postViewer.id});
-            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
-        }
-        else if (!favorited && postViewer)
-        {
+
+            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(favoritedByUsernameList)) {
+                setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+            }
+        } else if (!favorited && postViewer) {
             let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
-            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+
+            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(favoritedByUsernameList)) {
+                setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+            }
         }
     }, [favorited, favoritedByUsernameList, postViewer, post, favoritedByCount]);
 
     useEffect(() => {
-        if (vote == 0)
-        {
+        if (vote == 0) {
             let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
-            setVoteByUsernameList(updatedVoteByUsernameList);
-        }
-        else if(vote == 1)
-        {
+
+            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(voteByUsernameList)) {
+                setVoteByUsernameList(updatedVoteByUsernameList);
+            }
+        } else if(vote == 1) {
             let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:1});
-            setVoteByUsernameList(updatedVoteByUsernameList);
-        }
-        else
-        {
+
+            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(voteByUsernameList)) {
+                setVoteByUsernameList(updatedVoteByUsernameList);
+            }
+        } else {
             let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:-1});
-            setVoteByUsernameList(updatedVoteByUsernameList);
+
+            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(voteByUsernameList)) {
+                setVoteByUsernameList(updatedVoteByUsernameList);
+            }
         }
     }, [vote, voteByUsernameList, postViewer, post, voteResult]);
-
 
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
