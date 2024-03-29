@@ -4,8 +4,7 @@ import {Spinner} from "./Spinner";
 import Post from "./Post";
 import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts} from '../services/post.js'
 import {useRef} from "react";
-import {useInView} from 'react-intersection-observer';
-
+import 'intersection-observer';
 
 export default function Feed({
                                  feedUsername,
@@ -180,7 +179,7 @@ export default function Feed({
 
 
         const options = {
-            root: document.body,
+            root: null,
             rootMargin: '0px',
             threshold: 0.1 // Percentage of the target element that should be visible to trigger the callback
         };
@@ -205,9 +204,6 @@ export default function Feed({
             }
         };
     }, [noMorePosts, isLoading, refreshFeedPosts]);
-
-    // what is another way to detect scroll to bottom?
-
 
 
     const onNewTopPosts = (finalOffset) =>
