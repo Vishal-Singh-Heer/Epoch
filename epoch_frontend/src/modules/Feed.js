@@ -35,7 +35,7 @@ export default function Feed({
     const toRemove = 15; // Must be smaller than maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
-    // const [ref, inView] = useInView({threshold: 0.1, });
+    const [ref, inView] = useInView({threshold: 0.1, });
 
 
     const refreshFeedPosts =  (reset, fromTop) =>
