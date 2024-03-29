@@ -4,7 +4,7 @@ import {Spinner} from "./Spinner";
 import Post from "./Post";
 import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts} from '../services/post.js'
 import {useRef} from "react";
-import {useInView} from "react-intersection-observer";
+// import {useInView} from "react-intersection-observer";
 
 export default function Feed({
                                  feedUsername,
@@ -35,7 +35,7 @@ export default function Feed({
     const toRemove = 15; // Must be smaller than maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
-    const [ref, inView] = useInView({threshold: 0.1, });
+    // const [ref, inView] = useInView({threshold: 0.1, });
 
 
     const refreshFeedPosts =  (reset, fromTop) =>
@@ -206,12 +206,12 @@ export default function Feed({
     //     };
     // }, [noMorePosts, isLoading, refreshFeedPosts]);
 
-    useEffect(() => {
-        if (inView && !noMorePosts && !isLoading) {
-            setIsLoading(true);
-            refreshFeedPosts(false, false);
-        }
-    }, [inView, noMorePosts, isLoading, refreshFeedPosts]);
+    // useEffect(() => {
+    //     if (inView && !noMorePosts && !isLoading) {
+    //         setIsLoading(true);
+    //         refreshFeedPosts(false, false);
+    //     }
+    // }, [inView, noMorePosts, isLoading, refreshFeedPosts]);
 
     const onNewTopPosts = (finalOffset) =>
     {
