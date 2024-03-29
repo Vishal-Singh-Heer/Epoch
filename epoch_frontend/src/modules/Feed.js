@@ -151,18 +151,12 @@ export default function Feed({
     {
         let finalToSetFeedPosts = finalFeedPosts;
 
-        if (data.length + finalFeedPosts.length > maxPosts)
-        {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
-            finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
-            setAllowScrollToTop(true);
-            setNoMoreTopPosts(false);
-        }
-        else
-        {
-            finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
-        }
+        setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
+        finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
+        finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
+        setAllowScrollToTop(true);
+        setNoMoreTopPosts(false);
+
 
         setFeedPosts(finalToSetFeedPosts);
 
