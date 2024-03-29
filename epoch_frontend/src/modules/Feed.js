@@ -305,7 +305,7 @@ export default function Feed({
 
                     {isLoading && (<Spinner className={'feed-loading'}/>)}
                     <div ref={bottomElementRef}/>
-                    <div ref={ref}/>
+                    {/*<div ref={ref}/>*/}
 
                 </div>
             )}
