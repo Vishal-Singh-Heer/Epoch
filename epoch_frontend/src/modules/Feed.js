@@ -34,6 +34,8 @@ export default function Feed({
     const maxPosts = 25;
     const toRemove = 15; // Must be smaller than maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
+    const bottomElementRef = useRef(null);
+
 
     const refreshFeedPosts =  (reset, fromTop) =>
     {
@@ -174,6 +176,35 @@ export default function Feed({
         setLoadingTop(false);
     }
 
+    useEffect(() => {
+        const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // Percentage of the target element that should be visible to trigger the callback
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                // User has scrolled to the bottom
+                if (!noMorePosts && !isLoading) {
+                    setIsLoading(true);
+                    refreshFeedPosts(false, false);
+                }
+            }
+        }, options);
+
+        if (bottomElementRef.current) {
+            observer.observe(bottomElementRef.current);
+        }
+
+        return () => {
+            if (bottomElementRef.current) {
+                observer.unobserve(bottomElementRef.current);
+            }
+        };
+    }, [noMorePosts, isLoading, refreshFeedPosts]);
+
+
     const onNewTopPosts = (finalOffset) =>
     {
         let finalToSetFeedPosts = feedPosts;
@@ -224,65 +255,50 @@ export default function Feed({
         }
     }, [refreshFeed, refreshFeedPosts]);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if ((window.innerHeight + document.documentElement.scrollTop) >= document.documentElement.offsetHeight) {
-                if (!noMorePosts && !isLoading) {
-                    setIsLoading(true);
-                    refreshFeedPosts(false, false);
-                }
-            }
-        }
-
-        window.addEventListener('scroll', handleScroll);
-
-        // Clean up the event listener when the component unmounts
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        }
-    }, [noMorePosts, isLoading, refreshFeedPosts]);
-
     return (
         <>
             {(isLoading && loadingTop) ? <Spinner className={'feed-loading'}/> : (
                 <div className={'feed-wrapper'}>
-                {loadingTop && <Spinner className={'feed-loading'}/>}
+                    {loadingTop && <Spinner className={'feed-loading'}/>}
 
-                <div className={'posts-wrapper'}>
-                    {(!loadingTop && allowScrollToTop && !noMoreTopPosts) && (
-                        <div className={'load-more-top-buttons-wrapper'}>
-                            <button className={'reset-feed-button'} onClick={() => {
-                                setLoadingTop(true);
-                                setIsLoading(true);
-                                refreshFeedPosts(true, false);
-                            }}>Refresh feed (top)</button>
+                    <div className={'posts-wrapper'}>
+                        {(!loadingTop && allowScrollToTop && !noMoreTopPosts) && (
+                            <div className={'load-more-top-buttons-wrapper'}>
+                                <button className={'reset-feed-button'} onClick={() => {
+                                    setLoadingTop(true);
+                                    setIsLoading(true);
+                                    refreshFeedPosts(true, false);
+                                }}>Refresh feed (top)
+                                </button>
 
-                            {/*<button className={'load-previous-posts-button'} onClick={() => {*/}
-                            {/*    setLoadingTop(true);*/}
-                            {/*    refreshFeedPosts(false, true);*/}
-                            {/*}}>Load previous posts</button>*/}
-                        </div>
-                    )}
+                                {/*<button className={'load-previous-posts-button'} onClick={() => {*/}
+                                {/*    setLoadingTop(true);*/}
+                                {/*    refreshFeedPosts(false, true);*/}
+                                {/*}}>Load previous posts</button>*/}
+                            </div>
+                        )}
 
-                    {(feedPosts.length === 0 && !isLoading) &&
-                        <div className={'no-posts'}>No posts to show, follow some people or make a new post</div>}
+                        {(feedPosts.length === 0 && !isLoading) &&
+                            <div className={'no-posts'}>No posts to show, follow some people or make a new post</div>}
 
-                    {feedPosts.length > 0 && (
-                        feedPosts.map((item) => (
-                            <Post key={item.post_id} post={item} postViewer={currentUser} refreshFeed={refreshFeed}
-                                  setRefreshFeed={setRefreshFeed} isInFavorites={isInFavorites}/>
-                        ))
-                    )}
+                        {feedPosts.length > 0 && (
+                            feedPosts.map((item) => (
+                                <Post key={item.post_id} post={item} postViewer={currentUser} refreshFeed={refreshFeed}
+                                      setRefreshFeed={setRefreshFeed} isInFavorites={isInFavorites}/>
+                            ))
+                        )}
 
-                    {noMorePosts && <h3 className={'no-more-posts'}>No more posts to show</h3>}
+                        {noMorePosts && <h3 className={'no-more-posts'}>No more posts to show</h3>}
+                    </div>
+
+                    {(currentUser && ((!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId)) && !viewingOnly) && (
+                        <button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
+                                onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
+
+                    {isLoading && (<Spinner className={'feed-loading'}/>)}
+                    <div ref={bottomElementRef}/>
+
                 </div>
-
-                {(currentUser && ((!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId)) && !viewingOnly) && (
-                    <button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
-                            onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
-
-                {isLoading && (<Spinner className={'feed-loading'}/>)}
-            </div>
             )}
         </>
     )
