@@ -61,7 +61,7 @@ export default function PostPopup({
     const [editPostFileRemoved, setEditPostFileRemoved] = useState(false);
     const checkBoxRef = React.createRef();
     const navigate = useNavigate();
-    const fileInputRef = useRef()
+    const fileInputRef = useRef(null)
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
