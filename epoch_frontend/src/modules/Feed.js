@@ -40,9 +40,9 @@ export default function Feed({
     const [allowScrollToTop, setAllowScrollToTop] = useState(false);
     const [noMoreTopPosts, setNoMoreTopPosts] = useState(false);
     const [offset, setOffset] = useState(0);
-    const limit = 20; // must be bigger than toRemove
+    const limit = 20; // must be bigger than toRemove and smaller than maxPosts
     const maxPosts = 25;
-    const toRemove = 15; // Must be smaller than limit
+    const toRemove = 15; // Must be smaller than limit and maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
     const [ref, inView] = useInView({threshold: 0.1, });
@@ -106,16 +106,16 @@ export default function Feed({
 
 
 
-        if (finalFeedPosts.length - toRemove > maxPosts)
-        {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove + (maxPosts - toRemove));
-        }
-        else
-        {
+        // if (finalFeedPosts.length - toRemove > maxPosts)
+        // {
+        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
+        //     finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove + (maxPosts - toRemove));
+        // }
+        // else
+        // {
             setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
             finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
-        }
+        // }
 
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
