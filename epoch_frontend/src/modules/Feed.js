@@ -106,16 +106,16 @@ export default function Feed({
 
 
 
-        if (finalFeedPosts.length - toRemove > maxPosts)
-        {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove + (maxPosts - toRemove));
-        }
-        else
-        {
+        // if (finalFeedPosts.length - toRemove > maxPosts)
+        // {
+        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
+        //     finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove + (maxPosts - toRemove));
+        // }
+        // else
+        // {
             setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
             finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
-        }
+        // }
 
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
