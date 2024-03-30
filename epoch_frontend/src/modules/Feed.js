@@ -181,7 +181,7 @@ export default function Feed({
     {
 
         let finalOffset = reset ? 0 : (offset);
-        let finalFeedPosts = (reset || feedPosts.length > maxPosts) ? [] : feedPosts;
+        let finalFeedPosts = (reset) ? [] : feedPosts;
 
         if (reset)
         {
