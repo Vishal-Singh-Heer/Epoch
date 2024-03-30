@@ -103,19 +103,17 @@ export default function Feed({
     const onNewBottomPosts = useCallback((data, finalFeedPosts, finalOffset) =>
     {
         let finalToSetFeedPosts = finalFeedPosts;
-
-
-        // if (finalFeedPosts.length - toRemove > maxPosts)
+        //
+        // if(finalToSetFeedPosts.length + data.length > maxPosts)
         // {
-        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
-        //     finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove + (maxPosts - toRemove));
+        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(toRemove + (maxPosts - toRemove))));
+        //     finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove + (maxPosts - toRemove));
         // }
         // else
         // {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove);
+            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(toRemove)));
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
         // }
-
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
         if(finalOffset > 0) {
