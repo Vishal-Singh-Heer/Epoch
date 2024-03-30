@@ -14,7 +14,6 @@ import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../ser
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import PopupUserList from "./PopupUserList";
 import {animated, useSpring} from "react-spring";
-import {render} from "@testing-library/react";
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
@@ -49,7 +48,6 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [upVoted, setUpVoted] = useState(false);
     const [downVoted, setDownVoted] = useState(false);
     const [voteResult, setVoteResult] = useState(0);
-    const [originalVote, setOriginalVote] = useState(0);
     const [favoritedByUsernameList, setFavoritedByUsernameList] = useState((post && post.favorited_by_usernames) ? post.favorited_by_usernames : []);
     const [voteByUsernameList, setVoteByUsernameList] = useState((post && post.votes_by_usernames) ? post.votes_by_usernames : []);
     const [showFavoritedByList, setShowFavoritedByList] = useState(false);
@@ -102,6 +100,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             setEditing(false);
         }
     }, [showPostPopup]);
+
     const handleProfilePhotoClick = (imageUrl) => {
         setOverlayImageUrl(imageUrl);
         setShowOverlay(true);
@@ -182,31 +181,35 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setShowFullCaption(false);
     }
 
-const renderCaptionWithHighlights = (toRender) => {
-    if (!toRender) {
-        return null;
-    }
-
-    let regex = /(@[a-zA-Z0-9_]+)|(#\w+)|(https?:\/\/[^\s]+)/g;
-    let parts = toRender.split(regex);
-
-    let elements = parts.map((part, index) => {
-
-        if (part) {
-            if (part.startsWith('@')) {
-                return <a key={index} href={`/${part.substring(1)}`} className="hashtag">{part}</a>;
-            } else if (part.startsWith('#')) {
-                return <a key={index} href={`/hashtags/${part}`} className="hashtag">{part}</a>;
-            } else if (part.startsWith('http')) {
-                return <a key={index} href={part} className="hashtag">{part}</a>;
-            } else {
-                return part;
-            }
+    const renderCaptionWithHighlights = (toRender) => {
+        if (!toRender) {
+            return null;
         }
-    });
 
-    return <div>{elements}</div>;
-};
+        let regex = /(@[a-zA-Z0-9_]+)|(#\w+)|(https?:\/\/[^\s]+)/g;
+        let parts = toRender.split(regex);
+
+        let elements = parts.map((part, index) => {
+
+            if (part) {
+                if (part.startsWith('@')) {
+                    return <a key={index} href={`/${part.substring(1)}`} className="hashtag">{part}</a>;
+                } else if (part.startsWith('#')) {
+                    return <a key={index} href={`/hashtags/${part}`} className="hashtag">{part}</a>;
+                } else if (part.startsWith('http')) {
+                    return <a key={index} href={part} className="hashtag">{part}</a>;
+                } else {
+                    return part;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        });
+
+        return <div>{elements}</div>;
+    };
 
     const gotUsersMentioned = () => {
         const usernames = [];
@@ -542,7 +545,7 @@ const renderCaptionWithHighlights = (toRender) => {
 
         setFavoritedByCount(parseInt(post.favorited_by_count));
 
-    }, [post.favorited_by, postViewer]);
+    }, [post.favorited_by, postViewer, post.favorited_by_count]);
 
     useEffect(() => {
         setShowCommentsSection(location.pathname.includes('/comments'));
@@ -557,21 +560,18 @@ const renderCaptionWithHighlights = (toRender) => {
             if (post.votes[postViewer.id] === 1)
             {
                 setVote(1);
-                setOriginalVote(1)
                 setUpVoted(true);
                 setDownVoted(false);
             }
             else if (post.votes[postViewer.id] === -1)
             {
                 setVote(-1);
-                setOriginalVote(-1);
                 setUpVoted(false);
                 setDownVoted(true);
             }
             else
             {
                 setVote(0);
-                setOriginalVote(0);
                 setUpVoted(false);
                 setDownVoted(false);
             }
@@ -604,13 +604,13 @@ const renderCaptionWithHighlights = (toRender) => {
     }, [favorited, favoritedByUsernameList, postViewer, post, favoritedByCount]);
 
     useEffect(() => {
-        if (vote == 0) {
+        if (vote === 0) {
             let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
 
             if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(voteByUsernameList)) {
                 setVoteByUsernameList(updatedVoteByUsernameList);
             }
-        } else if(vote == 1) {
+        } else if(vote === 1) {
             let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:1});
 

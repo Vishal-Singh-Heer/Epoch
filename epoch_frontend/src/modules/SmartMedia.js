@@ -50,7 +50,7 @@ const SmartMedia = ({file, fileUrl, file_type, file_name, className}) => {
         } else if (fileUrl) {
             switch (mediaType) {
                 case 'image':
-                    return <img src={fileUrl} className={className}/>;
+                    return <img src={fileUrl} className={className} alt={file_name}/>;
                 case 'video':
                     return <video src={fileUrl} controls className={className}/>
                 case 'audio':

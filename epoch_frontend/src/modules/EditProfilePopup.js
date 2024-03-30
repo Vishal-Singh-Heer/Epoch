@@ -43,7 +43,6 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const currentPasswordRef = useRef(null);
     const newPasswordRef = useRef(null);
     const maxImageBytes = 30000001;
-    const maxVideoBytes = 200000001;
     const allowedFileTypes = ["jpg", "jpeg", "png", "gif", "HEIC", "JPG", "JPEG", "PNG", "GIF", "heic"];
 
 
@@ -78,7 +77,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             setBackgroundPicError(false);
             setProfilePicError(false);
         }
-    }, [showEditProfilePopup]);
+    }, [showEditProfilePopup, backgroundPicId,  profilePicId, user]);
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -231,7 +230,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 newData.background_pic_id = -1;
             }
 
-            if (!invalidUsername && !invalidDisplayname && !invalidPassword && formDataChanged) {
+            if (!invalidUsername && !invalidDisplayname && !invalidPassword && formDataChanged && !invalidBio && !saving) {
                 setSaving(true);
                 setSaveButtonPrompt('Saving...');
                 updateUser(user.id, newData)
@@ -440,7 +439,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                                         <img src={URL.createObjectURL(profilePicFile)} alt={profilePicFile.name} className={"edit-popup-profile-pic"} />
                                     )}
                                     {!profilePicFile && !removableProfilePic && (
-                                        <img src={process.env.PUBLIC_URL + '/images/default_pfp.png'} alt={"default profile photo"} className={"edit-popup-profile-pic"} />
+                                        <img src={process.env.PUBLIC_URL + '/images/default_pfp.png'} alt={"default profile pic"} className={"edit-popup-profile-pic"} />
                                     )}
                                 </div>
 

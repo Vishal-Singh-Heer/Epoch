@@ -22,7 +22,6 @@ function Comments() {
   const [comments, setComments] = useState([]);
   const [commentsPost, setCommentsPost] = useState(null);
   const [refreshFeed, setRefreshFeed] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const { user } = useContext(UserContext);
   const { updateUser } = useContext(UserContext);
   const [showNewPostPopup, setShowNewPostPopup] = useState(false);
@@ -69,7 +68,7 @@ function Comments() {
                 navigate('/epoch/login')
             })
         }
-    }, [refreshComments]);
+    }, [refreshComments, postId, navigate])
 
   useEffect(() => {
     setPostId(location.pathname.split('/comments/')[1]);
@@ -77,7 +76,7 @@ function Comments() {
 
   useEffect(()=>{
 
-    if(postId != -1) {
+    if(postId !== -1) {
     getAllComments(postId)
       .then(data => {
         setCommentsPost(data.post);
@@ -91,7 +90,7 @@ function Comments() {
         navigate('/epoch/login')
       })
     }
-  }, [postId])
+  }, [postId, navigate])
 
 
   if(!user) {

@@ -5,6 +5,7 @@ import Post from "./Post";
 import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts, getFavoritePosts} from '../services/post.js'
 import {useRef} from "react";
 import {useInView} from "react-intersection-observer";
+import { useCallback } from 'react';
 
 export default function Feed({
                                  feedUsername,
@@ -30,16 +31,85 @@ export default function Feed({
     const [allowScrollToTop, setAllowScrollToTop] = useState(false);
     const [noMoreTopPosts, setNoMoreTopPosts] = useState(false);
     const [offset, setOffset] = useState(0);
-    const [limit, setLimit] = useState(20); // must be bigger tha maxPosts
+    const limit = 20; // must be bigger tha maxPosts
     const maxPosts = 25;
     const toRemove = 15; // Must be smaller than maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
     const [ref, inView] = useInView({threshold: 0.1, });
 
-
-    const refreshFeedPosts =  (reset, fromTop) =>
+    const onNewBottomPosts = useCallback((data, finalFeedPosts, finalOffset) =>
     {
+        let finalToSetFeedPosts = finalFeedPosts;
+
+        setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
+        finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
+        finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
+
+
+        if(finalOffset > 0) {
+            setAllowScrollToTop(true);
+            setNoMoreTopPosts(false);
+        }
+        else
+        {
+            setAllowScrollToTop(false);
+            setNoMoreTopPosts(true);
+        }
+
+
+        setFeedPosts(finalToSetFeedPosts);
+
+        if (data.length < limit)
+        {
+            setNoMorePosts(true);
+        }
+
+        setOffset(finalOffset + limit)
+        setIsLoading(false);
+        setLoadingTop(false);
+
+    }, [previousPosts, toRemove]);
+
+    const onNewTopPosts = useCallback((finalOffset) =>
+    {
+        let finalToSetFeedPosts = feedPosts;
+
+        if (previousPosts.length === 0)
+        {
+            setNoMoreTopPosts(true);
+            setAllowScrollToTop(false);
+            return;
+        }
+
+        let toAdd = previousPosts.slice(previousPosts.length - limit);
+        let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
+        setPreviousPosts(newPreviousPosts);
+
+        if (toAdd.length + feedPosts.length > maxPosts)
+        {
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
+            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+            setOffset(prevOffset => prevOffset - toRemove - toRemove);
+            setNoMorePosts(false);
+        }
+        else
+        {
+            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+        }
+
+        setFeedPosts(finalToSetFeedPosts);
+
+        if (previousPosts.length === 0)
+        {
+            setNoMoreTopPosts(true);
+            setAllowScrollToTop(false);
+        }
+    }, [feedPosts, previousPosts, toRemove]);
+
+    const refreshFeedPosts = useCallback((reset, fromTop) =>
+    {
+
         let finalOffset = reset ? 0 : (offset);
         let finalFeedPosts = reset ? [] : feedPosts;
 
@@ -160,74 +230,9 @@ export default function Feed({
         }
 
         setRefreshFeed(false);
-    }
-
-    const onNewBottomPosts = (data, finalFeedPosts, finalOffset) =>
-    {
-        let finalToSetFeedPosts = finalFeedPosts;
-
-        setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-        finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
-        finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
+    }, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
 
 
-        if(finalOffset > 0) {
-            setAllowScrollToTop(true);
-            setNoMoreTopPosts(false);
-        }
-        else
-        {
-            setAllowScrollToTop(false);
-            setNoMoreTopPosts(true);
-        }
-
-
-        setFeedPosts(finalToSetFeedPosts);
-
-        if (data.length < limit)
-        {
-            setNoMorePosts(true);
-        }
-
-        setOffset(finalOffset + limit)
-        setIsLoading(false);
-        setLoadingTop(false);
-    }
-
-    // useEffect(() => {
-    //
-    //     if (!('IntersectionObserver' in window)) {
-    //         // IntersectionObserver not supported, handle gracefully
-    //         return;
-    //     }
-    //
-    //
-    //     const options = {
-    //         root: null,
-    //         rootMargin: '0px',
-    //         threshold: 0.1 // Percentage of the target element that should be visible to trigger the callback
-    //     };
-    //
-    //     const observer = new IntersectionObserver((entries) => {
-    //         if (entries[0].isIntersecting) {
-    //             // User has scrolled to the bottom
-    //             if (!noMorePosts && !isLoading) {
-    //                 setIsLoading(true);
-    //                 refreshFeedPosts(false, false);
-    //             }
-    //         }
-    //     }, options);
-    //
-    //     if (bottomElementRef.current) {
-    //         observer.observe(bottomElementRef.current);
-    //     }
-    //
-    //     return () => {
-    //         if (bottomElementRef.current) {
-    //             observer.unobserve(bottomElementRef.current);
-    //         }
-    //     };
-    // }, [noMorePosts, isLoading, refreshFeedPosts]);
 
     useEffect(() => {
         if (inView && !noMorePosts && !isLoading) {
@@ -236,48 +241,14 @@ export default function Feed({
         }
     }, [inView, noMorePosts, isLoading, refreshFeedPosts]);
 
-    const onNewTopPosts = (finalOffset) =>
-    {
-        let finalToSetFeedPosts = feedPosts;
 
-        if (previousPosts.length === 0)
-        {
-            setNoMoreTopPosts(true);
-            setAllowScrollToTop(false);
-            return;
-        }
-
-        let toAdd = previousPosts.slice(previousPosts.length - limit);
-        let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
-        setPreviousPosts(newPreviousPosts);
-
-        if (toAdd.length + feedPosts.length > maxPosts)
-        {
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
-            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-            setOffset(prevOffset => prevOffset - toRemove - toRemove);
-            setNoMorePosts(false);
-        }
-        else
-        {
-            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-        }
-
-        setFeedPosts(finalToSetFeedPosts);
-
-        if (previousPosts.length === 0)
-        {
-            setNoMoreTopPosts(true);
-            setAllowScrollToTop(false);
-        }
-    }
 
     useEffect(() => {
         if (firstRender) {
             refreshFeedPosts(true, false);
             setFirstRender(false);
         }
-    });
+    }, [firstRender, refreshFeedPosts, setFirstRender]);
 
     useEffect(() => {
         if (refreshFeed) {

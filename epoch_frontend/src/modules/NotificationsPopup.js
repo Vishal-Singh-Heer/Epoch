@@ -1,6 +1,4 @@
-
-import {useNavigate} from "react-router-dom";
-import React, {useEffect, useState, useRef} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import '../styles/NotificationsPopup.css';
 import {markAllNotificationsRead, getUserNotifications, markNotificationRead} from "../services/notification";
 import NotificationItem from "./NotificationItem";
@@ -15,7 +13,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
     const {user} = useContext(UserContext);
     const[notifications, setNotifications] = useState((user && user.notifications) || []);
     const [offset, setOffset] = useState(0);
-    const [limit, setLimit] = useState(10);
+    const limit =  useState(10);
     const [isLoading, setIsLoading] = useState(false);
     const [noMoreNotifications, setNoMoreNotifications] = useState(false);
     const [countUnreadNotifications, setCountUnreadNotifications] = useState(0);
@@ -38,7 +36,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
         setShowNotifications(false);
     }
 
-    const getNotifications = () => {
+    const getNotifications = useCallback(() => {
         setIsLoading(true);
         let offsetToUse = offset;
 
@@ -89,7 +87,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
                 updateUser(user);
 
                 for (let i = 0; i < data.length; i++) {
-                    if(data[i].read == false) {
+                    if(data[i].read === false) {
                         setNewUnreadNotifications(true);
                         break;
                     }
@@ -99,7 +97,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
                 console.log(error);
                 setIsLoading(false);
             });
-    }
+    }, [offset, limit, noMoreNotifications, notifications, setNewUnreadNotifications, updateUser, user, userId]);
 
     useEffect(() => {
         if (!showNotifications && !isLoading ) {
@@ -110,18 +108,18 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
             return () => clearInterval(interval);
         }
 
-    }, [showNotifications, isLoading]);
+    }, [showNotifications, isLoading, getNotifications]);
 
     useEffect(() => {
         if (notifications.length === 0 && noMoreNotifications !== true) {
             getNotifications();
         }
-    }, []);
+    }, [notifications, noMoreNotifications, getNotifications]);
 
     useEffect(() => {
         let count = 0;
         for (let i = 0; i < notifications.length; i++) {
-            if(notifications[i].read == false) {
+            if(notifications[i].read === false) {
                 count++;
             }
         }
@@ -135,7 +133,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
         {
             setNewUnreadNotifications(false);
         }
-    }, [notifications]);
+    }, [notifications, getNotifications, noMoreNotifications, notifications.length, setNewUnreadNotifications]);
 
     useEffect(() => {
         if (newUnreadNotifications) {
@@ -149,7 +147,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
         } else {
             setLoadMorePrompt('Load more');
         }
-    }, [newUnreadNotifications, noMoreNotifications]);
+    }, [newUnreadNotifications, noMoreNotifications, setNewUnreadNotifications]);
 
     const markNotificationAsRead = (notificationId) => {
         setShowNotifications(false);

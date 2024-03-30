@@ -1,6 +1,5 @@
 import {useLocation} from 'react-router-dom';
 import React, {useContext, useEffect} from 'react';
-import {getAllHashtagPosts} from '../services/post';
 import {getUserInfo} from '../services/user';
 import Feed from '../modules/Feed';
 import {Spinner} from '../modules/Spinner';

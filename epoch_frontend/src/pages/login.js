@@ -98,7 +98,7 @@ function Login() {
         return () => {
             isMounted = false;
         };
-    }, [setIsLoading, setSigningInPrompt]);
+    }, [setIsLoading, setSigningInPrompt, navigate]);
 
     useEffect(() => {
         const handleResize = () => {

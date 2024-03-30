@@ -4,7 +4,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {useParams} from 'react-router-dom';
 import {NotFound} from "./notFound";
 import NavBar from "../modules/NavBar";
-import {redirect, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {Spinner} from "../modules/Spinner";
 import {UserContext} from "../services/UserContext";
 import '../styles/Profile.css'
@@ -17,6 +17,7 @@ import PostPopup from "../modules/PostPopup";
 import {useSpring, animated} from 'react-spring';
 import NoSessionNavBar from '../modules/NoSessionNavBar';
 import PopupUserList from "../modules/PopupUserList";
+import {useCallback} from 'react';
 
 function Profile() {
     const {username} = useParams();
@@ -43,7 +44,6 @@ function Profile() {
     const [popupList, setPopupList] = useState({});
     const [showUserListModal, setShowUserListModal] = useState(false); // State to manage UserListModal visibility
     const [showingFol, setShowingFol] = useState(true);
-    const [showPopup, setShowPopup] = useState(false);
     const [refreshProfile, setRefreshProfile] = useState(false);
     const [showDeleteAccountPopup, setShowDeleteAccountPopup] = useState(false);
     const [deleteAccountError, setDeleteAccountError] = useState(false);
@@ -203,7 +203,7 @@ function Profile() {
 
     }, [setIsFollowing, setIsFollowingPrompt, viewedId, user]);
 
-    const fetchProfileFollowData = () => {
+    const fetchProfileFollowData = useCallback(() => {
         setIsLoading(true);
         if (isCurrentUser) {
             profileFollowNetwork("self")
@@ -237,11 +237,11 @@ function Profile() {
                     setIsLoading(false);
                 });
         }
-    };
+    }, [isCurrentUser, viewedId, isFollowing]);
 
     useEffect(() => {
         fetchProfileFollowData();
-    }, [isCurrentUser, viewedId, user, isFollowing]);
+    }, [isCurrentUser, viewedId, user, isFollowing, fetchProfileFollowData]);
 
     useEffect(() => {
         if (showingFol) {
@@ -295,7 +295,7 @@ function Profile() {
 
     }
 
-    if (!user && !userInfo || deletingAccount) {
+    if ((!user && !userInfo) || deletingAccount) {
         return <Spinner/>
     }
 

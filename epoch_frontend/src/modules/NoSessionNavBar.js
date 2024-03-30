@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useState, useEffect} from "react";
 import {NavLink} from "react-router-dom";
 import "../styles/NavBar.css";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -8,7 +8,7 @@ import SmartMedia from "./SmartMedia";
 const NoSessionNavBar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const isMobile= window.innerWidth <= 768;
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);

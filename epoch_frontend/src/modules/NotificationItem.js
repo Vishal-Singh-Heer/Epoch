@@ -7,21 +7,16 @@ import PersonRemoveAlt1OutlinedIcon from '@mui/icons-material/PersonRemoveAlt1Ou
 import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined';
 import React from "react";
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState, useRef} from "react";
+import {useEffect, useState} from "react";
 import '../styles/NotificationItem.css';
-import {markNotificationRead} from "../services/notification";
-import {useContext} from "react";
-import {UserContext} from "../services/UserContext";
 
 function NotificationItem({notification, setShowNotifications, onRead}) {
     const navigate = useNavigate();
     const [notificationIcon, setNotificationIcon] = useState(null);
     const [notificationText, setNotificationText] = useState('');
     const [notificationRead, setNotificationRead] = useState(notification.read);
-    const markReadRef = useRef(null);
     const [notificationActionLink, setNotificationActionLink] = useState('');
-    const {user} = useContext(UserContext);
-    const {updateUser} = useContext(UserContext);
+
 
     useEffect(() => {
         if (notification.type === 'up-vote') {
