@@ -35,7 +35,7 @@ export default function Feed({
     const maxPosts = 25;
     const toRemove = 15; // Must be smaller than maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
-    const bottomElementRef = useRef(null);
+    // const bottomElementRef = useRef(null);
     // const [ref, inView] = useInView({threshold: 0.1, });
 
     const onNewBottomPosts = useCallback((data, finalFeedPosts, finalOffset) =>
@@ -290,13 +290,11 @@ export default function Feed({
                     </div>
 
                     {(currentUser && ((!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId)) && !viewingOnly) && (
-                        <button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
-                                onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
+                        <button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`} onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
 
                     {isLoading && (<Spinner className={'feed-loading'}/>)}
-                    <div ref={bottomElementRef}/>
+                    {/*<div ref={bottomElementRef}/>*/}
                     {/*<div ref={ref}/>*/}
-
                 </div>
             )}
         </>
