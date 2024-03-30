@@ -11,45 +11,23 @@ import {getUserInfo} from "../services/user";
 
 function Favorites() {
     const [isLoading, setIsLoading] = useState(true);
-    const [posts, setPosts] = useState([]);
     const {user, updateUser} = useContext(UserContext);
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [refreshFeed, setRefreshFeed] = useState(true);
-
-    const updatePosts = React.useCallback(() => {
-        if (user) {
-            getFavoritePosts(user.id)
-                .then(data => {
-                    setPosts(data);
-                    setIsLoading(false);
-                    setRefreshFeed(false);
-                })
-                .catch(error => {
-                    console.log(error);
-                    setIsLoading(false);
-                    setRefreshFeed(false);
-                });
-        }
-    }, [user]);
 
     useEffect(() => {
         if (!user) {
             getUserInfo()
                 .then((data) => {
                     updateUser(data);
+                    setIsLoading(false);
                 })
                 .catch((error) => {
                     updateUser(null);
+                    setIsLoading(false);
                 });
         }
     }, [updateUser, user]);
-
-    useEffect(() => {
-        if (refreshFeed) {
-            setIsLoading(true);
-            updatePosts();
-        }
-    }, [updatePosts, refreshFeed]);
 
     if (!user) {
         return (
@@ -70,7 +48,7 @@ function Favorites() {
                             {user ? (<Feed feedUsername={user.username} feedUserId={user.id} isInProfile={true}
                                            currentUser={user} showNewPostPopup={showNewPostPopup}
                                            setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                           setRefreshFeed={setRefreshFeed} posts={posts}
+                                           setRefreshFeed={setRefreshFeed}
                                            isInFavorites={true}/>) : (<></>)}
                         </div>
                     </div>

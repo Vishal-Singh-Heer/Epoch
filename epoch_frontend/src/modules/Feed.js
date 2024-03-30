@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import '../styles/Feed.css';
 import {Spinner} from "./Spinner";
 import Post from "./Post";
-import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts} from '../services/post.js'
+import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts, getFavoritePosts} from '../services/post.js'
 import {useRef} from "react";
 import {useInView} from "react-intersection-observer";
 
@@ -77,6 +77,20 @@ export default function Feed({
             }
             else if (currentUser)
             {
+                if (isInFavorites)
+                {
+                    getFavoritePosts(currentUser.id, finalOffset, limit)
+                    .then((data) =>
+                    {
+                        onNewBottomPosts(data, finalFeedPosts, finalOffset);
+                    })
+                    .catch((error) =>
+                    {
+                        console.log(error);
+                        setIsLoading(false);
+                        setLoadingTop(false);
+                    });
+                }
                 if (isInProfile && feedUserId && currentUser.id === feedUserId)
                 {
                     getAllUserPosts(currentUser.id, finalOffset, limit)
