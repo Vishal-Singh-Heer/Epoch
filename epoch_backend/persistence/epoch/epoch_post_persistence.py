@@ -134,7 +134,7 @@ class epoch_post_persistence(post_persistence):
     def get_all_hashtag_posts(self, hashtag: str, offset: int, limit: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        hashtag_pattern = f"%{hashtag}"
+        hashtag_pattern = f"%{hashtag}%"
         cursor.execute("SELECT * FROM posts WHERE caption LIKE %s ORDER BY created_at DESC LIMIT %s OFFSET %s", (hashtag_pattern, limit, offset))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
