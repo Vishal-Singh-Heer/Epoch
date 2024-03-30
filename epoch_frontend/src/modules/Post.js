@@ -148,8 +148,10 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
             return null;
         }
 
+        const replacedNewlines = toRender.replace(/\n/g, '<br>'); // Replace \n with <br> tags
+
         let regex = /(@[a-zA-Z0-9_]+)|(#\w+)|(https?:\/\/[^\s]+)/g;
-        let parts = toRender.split(regex);
+        let parts = replacedNewlines.split(regex);
 
         let elements = parts.map((part, index) => {
 
@@ -161,7 +163,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                 } else if (part.startsWith('http')) {
                     return <a key={index} href={part} className="hashtag">{part}</a>;
                 } else {
-                    return part;
+                    return <span key={index} dangerouslySetInnerHTML={{__html: part}}></span>;
                 }
             }
             else
@@ -622,9 +624,9 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
 
             <div className="post-body">
                 {post.caption && post.caption.length > 0 && (
-                    <p className={"post-caption"}>
+                    <p className={"post-caption"} >
                         {(showFullCaption && post.caption) ? renderCaptionWithHighlights(post.caption) : (
-                            <>
+                            < >
                                 {renderCaptionWithHighlights(truncatedCaption)}
                                 <span className="see-more" onClick={toggleCaptionVisibility}>
                                     See more
