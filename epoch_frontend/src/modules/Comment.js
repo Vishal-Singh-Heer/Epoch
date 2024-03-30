@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
-import {getUserInfo, getUsernameInfo} from '../services/user';
 import {useNavigate} from 'react-router-dom';
 import SmartMedia from "./SmartMedia";
 import '../styles/Comment.css'
@@ -8,10 +7,7 @@ import {deleteComment} from '../services/comments'
 import {animated, useSpring} from "react-spring";
 
 function Comment({commentObject, commentViewer, refreshComments, setRefreshComments}) {
-  const commentCharLimit = 240;
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
-  const [error, setError] = useState(false);
   const [overlayImageUrl, setOverlayImageUrl] = useState('');
   const [showOverlay, setShowOverlay] = useState(false);
   const [deleted, setDeleted] = useState(false);
@@ -118,7 +114,6 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
               </div>
 
               <div className="comment-header-right">
-                  {error && (<p className="comment-error-message">{errorMessage}</p>)}
 
                   {commentViewer.username === commentObject.username && (
                       <DeleteForeverOutlinedIcon className="delete-comment-icon"

@@ -4,7 +4,6 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import {Spinner} from '../modules/Spinner'
 import NavBar from "../modules/NavBar";
-import {UserContext} from "../services/UserContext";
 import {TextField} from "@mui/material";
 import '../styles/UserList.css'
 import PostPopup from "../modules/PostPopup";

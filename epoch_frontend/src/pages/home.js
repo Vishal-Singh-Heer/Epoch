@@ -1,21 +1,18 @@
 import React, {useState, useEffect, useContext} from "react";
 import "../styles/Login.css";
-import {getUserInfo, removeSessionCookie} from "../services/user";
+import {getUserInfo} from "../services/user";
 import {Spinner} from "../modules/Spinner";
 import NavBar from "../modules/NavBar";
 import {useRef} from "react";
-import {useNavigate} from "react-router-dom";
 import Feed from "../modules/Feed";
 import {UserContext} from '../services/UserContext';
 import '../styles/Home.css';
 import PostPopup from "../modules/PostPopup";
-import {getUserNotifications} from '../services/notification'
 
 function Home() {
     const [redirectToLogin, setRedirectToLogin] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const isMounted = useRef(true);
-    const navigate = useNavigate();
     const {user} = useContext(UserContext);
     const {updateUser} = useContext(UserContext);
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
@@ -42,7 +39,6 @@ function Home() {
 
     if (redirectToLogin && isMounted.current) {
         window.location.href = "/epoch/login";
-        //return <div><h2>User Not Signed In</h2>{navigate('/epoch/login')}</div>;
     }
 
     if (!user) {

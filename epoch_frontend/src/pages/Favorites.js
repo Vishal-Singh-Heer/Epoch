@@ -1,7 +1,6 @@
 import React, {useEffect, useState, useContext} from "react";
 import {Spinner} from "../modules/Spinner";
 import {UserContext} from "../services/UserContext";
-import {getFavoritePosts} from "../services/post";
 import Feed from "../modules/Feed";
 import NavBar from "../modules/NavBar";
 import '../styles/Favorites.css';
