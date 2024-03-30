@@ -111,8 +111,8 @@ export default function Feed({
         // }
         // else
         // {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(toRemove)));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
+            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove);
         // }
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
