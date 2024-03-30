@@ -432,7 +432,7 @@ export default function Feed({
             </animated.div>
 
             {(postToEdit.file) ? (
-                (fileBlob) &&
+                (showPostPopup && fileBlob) &&
                 <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
                profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
                setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption} postFile={fileBlob}
@@ -440,6 +440,7 @@ export default function Feed({
                minute={releaseMinute} second={releaseSecond}
                postId={postToEditId} userId={currentUser.id}/>
             ) : (
+                (showPostPopup) &&
                 <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
                profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
                setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption}
