@@ -11,7 +11,7 @@ class epoch_session_persistence(session_persistence):
     def add_session(self, new_session: session):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute(f"DELETE FROM sessions WHERE user_id = {new_session.user_id}")
+        # cursor.execute(f"DELETE FROM sessions WHERE user_id = {new_session.user_id}")
         cursor.execute(f"INSERT INTO sessions VALUES ('{new_session.session_id}', '{new_session.user_id}')")
         connection.commit()
         cursor.close()

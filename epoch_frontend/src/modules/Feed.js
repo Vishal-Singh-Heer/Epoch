@@ -40,9 +40,9 @@ export default function Feed({
     const [allowScrollToTop, setAllowScrollToTop] = useState(false);
     const [noMoreTopPosts, setNoMoreTopPosts] = useState(false);
     const [offset, setOffset] = useState(0);
-    const limit = 20; // must be bigger than toRemove
+    const limit = 20; // must be bigger than toRemove and smaller than maxPosts
     const maxPosts = 25;
-    const toRemove = 15; // Must be smaller than limit
+    const toRemove = 15; // Must be smaller than limit and maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
     const [ref, inView] = useInView({threshold: 0.1, });
