@@ -40,9 +40,9 @@ export default function Feed({
     const [allowScrollToTop, setAllowScrollToTop] = useState(false);
     const [noMoreTopPosts, setNoMoreTopPosts] = useState(false);
     const [offset, setOffset] = useState(0);
-    const limit = 20; // must be bigger than toRemove and smaller than maxPosts
+    const limit = 20; // must be bigger than toRemove
     const maxPosts = 25;
-    const toRemove = 15; // Must be smaller than limit and maxPosts
+    const toRemove = 15; // Must be smaller than limit
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
     const [ref, inView] = useInView({threshold: 0.1, });
@@ -104,16 +104,19 @@ export default function Feed({
     {
         let finalToSetFeedPosts = finalFeedPosts;
 
-        // if(finalToSetFeedPosts.length > maxPosts)
-        // {
-        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(toRemove + (limit - toRemove))));
-        //     finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove + (limit - toRemove));
-        // }
-        // else
-        // {
+
+
+        if (finalFeedPosts.length - toRemove > maxPosts)
+        {
+            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
+            finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove + (maxPosts - toRemove));
+        }
+        else
+        {
             setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove);
-        // }
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
+        }
+
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
         if(finalOffset > 0) {
@@ -431,7 +434,7 @@ export default function Feed({
             </animated.div>
 
             {(postToEdit.file) ? (
-                (showPostPopup && fileBlob) &&
+                (fileBlob) &&
                 <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
                profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
                setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption} postFile={fileBlob}
@@ -439,7 +442,6 @@ export default function Feed({
                minute={releaseMinute} second={releaseSecond}
                postId={postToEditId} userId={currentUser.id}/>
             ) : (
-                (showPostPopup) &&
                 <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
                profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
                setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption}
