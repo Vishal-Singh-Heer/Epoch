@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import '../styles/PostPopup.css';
 import SmartMedia from "./SmartMedia";
 import {newPost, updatePost} from "../services/post.js"
