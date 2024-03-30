@@ -100,22 +100,22 @@ export default function Feed({
             });
     }
 
-    const onNewBottomPosts = useCallback((data, finalFeedPosts, finalOffset) =>
+    const onNewBottomPosts = (data, finalFeedPosts, finalOffset) =>
     {
         let finalToSetFeedPosts = finalFeedPosts;
 
 
 
-        if (finalFeedPosts.length - toRemove > maxPosts)
-        {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove + (maxPosts - toRemove));
-        }
-        else
-        {
+        // if (finalFeedPosts.length - toRemove > maxPosts)
+        // {
+        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
+        //     finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove + (maxPosts - toRemove));
+        // }
+        // else
+        // {
             setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
-        }
+            finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove);
+        // }
 
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
@@ -141,7 +141,7 @@ export default function Feed({
         setIsLoading(false);
         setLoadingTop(false);
 
-    }, [previousPosts, toRemove]);
+    } //, [previousPosts, toRemove]);
 
     const onNewTopPosts = useCallback((finalOffset) =>
     {
