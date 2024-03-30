@@ -313,8 +313,7 @@ def get_posts_users_info(posts):
     return posts_users
 
 
-def get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type, profile_picture_name,
-                  i):
+def get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type, profile_picture_name, i):
     post_dict = {}
     post_dict["post_id"] = current_post[0]
     post_dict["user_id"] = current_post[1]
@@ -322,7 +321,7 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
     post_dict["profile_picture_type"] = profile_picture_type
     post_dict["profile_picture_name"] = profile_picture_name
     post_dict["username"] = username
-    post_dict["caption"] = current_post[3]
+    post_dict["caption"] = current_post[3].replace("\\n", "\n")
     post_dict["created_at"] = current_post[4].isoformat()
     post_dict["release"] = current_post[5].isoformat()
     post_dict["time_zone"] = current_post[8]

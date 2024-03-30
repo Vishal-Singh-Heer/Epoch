@@ -16,6 +16,12 @@ class epoch_post_persistence(post_persistence):
     def add_post(self, new_post: post):
         connection = get_db_connection()
         cursor = connection.cursor()
+
+        if not new_post.caption:
+            new_post.caption = ''
+        else:
+            new_post.caption = new_post.caption.replace('\n', '<br/>')
+
         if new_post.media_id is not None:
             cursor.execute(
                 "INSERT INTO posts (user_id, media_id, caption, created_at, release, time_zone) VALUES (%s, %s, %s, %s, %s, %s) RETURNING post_id",
@@ -158,6 +164,11 @@ class epoch_post_persistence(post_persistence):
         old_post = cursor.fetchone()
         old_post_media_id = old_post[2]
         old_post_caption = old_post[3]
+
+        if not new_post.caption:
+            new_post.caption = ''
+        else:
+            new_post.caption = new_post.caption.replace('\n', '\\n')
 
         if new_post.media_id is not None and new_post.media_id != -1:
             if (old_post_media_id is not None and new_post.media_id != old_post_media_id) or old_post_media_id is None:
