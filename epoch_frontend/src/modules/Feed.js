@@ -155,8 +155,17 @@ export default function Feed({
         setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
         finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
-        setAllowScrollToTop(true);
-        setNoMoreTopPosts(false);
+
+
+        if(finalOffset > 0) {
+            setAllowScrollToTop(true);
+            setNoMoreTopPosts(false);
+        }
+        else
+        {
+            setAllowScrollToTop(false);
+            setNoMoreTopPosts(true);
+        }
 
 
         setFeedPosts(finalToSetFeedPosts);
@@ -296,7 +305,7 @@ export default function Feed({
                             ))
                         )}
 
-                        {noMorePosts && <h3 className={'no-more-posts'}>No more posts to show</h3>}
+                        {(noMorePosts && feedPosts.length > 0) && <h3 className={'no-more-posts'}>No more posts to show</h3>}
                     </div>
 
                     {(currentUser && ((!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId)) && !viewingOnly) && (
