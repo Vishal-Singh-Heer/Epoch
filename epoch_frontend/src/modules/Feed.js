@@ -104,18 +104,16 @@ export default function Feed({
     {
         let finalToSetFeedPosts = finalFeedPosts;
 
-
-
-        if (finalFeedPosts.length - toRemove > maxPosts)
-        {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove + (maxPosts - toRemove));
-        }
-        else
-        {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
-        }
+        // if (finalFeedPosts.length - toRemove > maxPosts)
+        // {
+        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
+        //     finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove + (maxPosts - toRemove));
+        // }
+        // else
+        // {
+        //    setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
+        //    finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
+        // }
 
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
