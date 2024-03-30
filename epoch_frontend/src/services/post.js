@@ -110,6 +110,7 @@ function getAllUserPosts(userId, offset, limit) {
 
 function getAllHashtagPosts(hashtag, offset, limit) {
     return new Promise((resolve, reject) => {
+        hashtag.replace('.', '');
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
