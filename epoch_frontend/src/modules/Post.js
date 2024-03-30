@@ -6,17 +6,13 @@ import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlin
 import '../styles/Post.css';
 import {useNavigate} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
-import {deletePost} from '../services/post';
 import PostPopup from "./PostPopup";
 import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
 import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import PopupUserList from "./PopupUserList";
-import {animated, useSpring} from "react-spring";
 
-
-export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
+export default function Post({post, postViewer, isInFavorites, setShowDeletePostPopup, setPostToDelete, setShowFavoritedByList, setShowVoteByList, favoritedByUsernameList, voteByUsernameList, setFavoritedByUsernameList, setVoteByUsernameList, showPostPopup, setShowPostPopup, setReleaseMonth, setReleaseDay, setReleaseYear, setReleaseHour, setReleaseMinute, setReleaseSecond, setFileBlob, setPostToEditId, setPostToEditCaption, setPostToEdit}) {
     const captionCharLimit = 240;
     const timeAllowedToEditInSeconds = 30000;
     const [editable, setEditable] = useState(false);
@@ -30,14 +26,6 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [deleted, setDeleted] = useState(false);
-    const [showPostPopup, setShowPostPopup] = useState(false);
-    const [releaseMonth, setReleaseMonth] = useState('');
-    const [releaseDay, setReleaseDay] = useState(-1);
-    const [releaseYear, setReleaseYear] = useState(-1);
-    const [releaseHour, setReleaseHour] = useState('');
-    const [releaseMinute, setReleaseMinute] = useState(-1);
-    const [releaseSecond, setReleaseSecond] = useState(-1);
-    const [fileBlob, setFileBlob] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [updatingMessage, setUpdatingMessage] = useState('');
     const [favorited, setFavorited] = useState(false);
@@ -48,23 +36,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [upVoted, setUpVoted] = useState(false);
     const [downVoted, setDownVoted] = useState(false);
     const [voteResult, setVoteResult] = useState(0);
-    const [favoritedByUsernameList, setFavoritedByUsernameList] = useState((post && post.favorited_by_usernames) ? post.favorited_by_usernames : []);
-    const [voteByUsernameList, setVoteByUsernameList] = useState((post && post.votes_by_usernames) ? post.votes_by_usernames : []);
-    const [showFavoritedByList, setShowFavoritedByList] = useState(false);
-    const [showVoteByList, setShowVoteByList] = useState(false);
-    const [showDeletePostPopup, setShowDeletePostPopup] = useState(false);
-    const [deletePostError, setDeletePostError] = useState(false);
-    const [deletePostErrorPrompt, setDeletePostErrorPrompt] = useState('');
+    const [localFinalFavoritedByUsernameList, setLocalFinalFavoritedByUsernameList] = useState(favoritedByUsernameList);
+    const [localFinalVoteByUsernameList, setLocalFinalVoteByUsernameList] = useState(voteByUsernameList);
 
-    const {transform: inTransformDeletePost} = useSpring({
-        transform: `translateY(${showDeletePostPopup ? 0 : 100}vh)`,
-        config: {duration: 300},
-    });
-
-    const {transform: outTransformDeletePost} = useSpring({
-        transform: `translateY(${showDeletePostPopup ? 0 : -100}vh)`,
-        config: {duration: 300},
-    });
 
     useEffect(() => {
         let postTime = new Date(post.created_at)
@@ -76,22 +50,12 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             setEditable(timeDifferenceInSeconds <= timeAllowedToEditInSeconds);
         }, 1000);
 
-        let date = new Date(post.release);
-        date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
-        setReleaseMonth(parseInt(date.getMonth() + 1));
-        setReleaseDay(parseInt(date.getDate()));
-        setReleaseYear(parseInt(date.getFullYear()));
-        setReleaseMinute(parseInt(date.getMinutes()));
-        setReleaseSecond(parseInt(date.getSeconds()));
-
-        let hour = date.getHours();
-        let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
-        setReleaseHour(finalHour);
-
         return () => clearInterval(timerInterval);
 
 
     }, [post.created_at, post.release, timeAllowedToEditInSeconds]);
+
+
 
     useEffect(() => {
         if (!showPostPopup) {
@@ -259,36 +223,26 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         return visible;
     }
 
-    const onDeletePost = (postId, userId) => {
 
-        setDeletePostError(true);
-        setDeletePostErrorPrompt('Deleting post...');
-
-        deletePost(postId, userId)
-            .then(() => {
-                setDeletePostError(false);
-                setDeletePostErrorPrompt('');
-                setShowDeletePostPopup(false);
-                setPostAdmin(false);
-                setDeleted(true);
-                setRefreshFeed(true);
-            })
-            .catch((error) => {
-                setShowDeletePostPopup(true);
-                setDeletePostError(true);
-                setDeletePostErrorPrompt(error);
-
-                setTimeout(() => {
-                    setDeletePostError(false);
-                    setDeletePostErrorPrompt('');
-                }, 5000);
-            });
-    }
 
     const onEditPost = async () => {
         setUpdating(true);
         setEditing(true);
         setUpdatingMessage('Loading post editor...');
+        let date = new Date(post.release);
+        date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+        setReleaseMonth(parseInt(date.getMonth() + 1));
+        setReleaseDay(parseInt(date.getDate()));
+        setReleaseYear(parseInt(date.getFullYear()));
+        setReleaseMinute(parseInt(date.getMinutes()));
+        setReleaseSecond(parseInt(date.getSeconds()));
+        setPostToEditId(post.post_id);
+        setPostToEditCaption(post.caption);
+
+        let hour = date.getHours();
+        let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
+        setReleaseHour(finalHour);
+
         if (post.file) {
             const file = await fetch(post.file)
             const blob = await file.blob();
@@ -588,44 +542,44 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
     useEffect(() => {
         if (favorited && postViewer) {
-            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            let updatedFavoritedByUsernameList = localFinalFavoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedFavoritedByUsernameList.push({username:postViewer.username, user_id:postViewer.id});
 
-            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(favoritedByUsernameList)) {
-                setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(localFinalFavoritedByUsernameList)) {
+                setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
             }
         } else if (!favorited && postViewer) {
             let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
 
-            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(favoritedByUsernameList)) {
-                setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(localFinalFavoritedByUsernameList)) {
+                setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
             }
         }
-    }, [favorited, favoritedByUsernameList, postViewer, post, favoritedByCount]);
+    }, [favorited, localFinalFavoritedByUsernameList, postViewer, post, favoritedByCount]);
 
     useEffect(() => {
         if (vote === 0) {
-            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
 
-            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(voteByUsernameList)) {
-                setVoteByUsernameList(updatedVoteByUsernameList);
+            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
+                setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
             }
         } else if(vote === 1) {
-            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:1});
 
-            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(voteByUsernameList)) {
-                setVoteByUsernameList(updatedVoteByUsernameList);
+            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
+                setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
             }
         } else {
-            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:-1});
 
-            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(voteByUsernameList)) {
-                setVoteByUsernameList(updatedVoteByUsernameList);
+            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
+                setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
             }
         }
-    }, [vote, voteByUsernameList, postViewer, post, voteResult]);
+    }, [vote, localFinalVoteByUsernameList, postViewer, post, voteResult]);
 
     const navigateToProfile = () => {
         if (postAdmin){
@@ -657,11 +611,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     {error && (<p className="error-message">{errorMessage}</p>)}
                     {(postViewer && postAdmin && editable && !editing) && (
                         <BorderColorOutlinedIcon className="edit-post-button-icon" onClick={() => {
+                            setPostToEdit(post);
                             onEditPost();
                         }}></BorderColorOutlinedIcon>)}
                     {(postViewer && postAdmin && !editing) && (
                         <DeleteForeverOutlinedIcon className="delete-post-button-icon" onClick={() => {
                             setShowDeletePostPopup(true);
+                            setPostToDelete(post.post_id);
                         }}></DeleteForeverOutlinedIcon>)}
 
                 </div>
@@ -706,7 +662,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                                         }
                                                     }}></ArrowCircleUpSharpIcon>
                             <button className={'vote-count'} onClick={() => {
-                                if (voteByUsernameList.length > 0) {
+                                if (localFinalVoteByUsernameList.length > 0) {
+                                    setVoteByUsernameList(localFinalVoteByUsernameList);
                                     setShowFavoritedByList(false);
                                     setShowVoteByList(true);
                                 }
@@ -733,7 +690,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                             <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`}
                                                         onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
                             <button className={'favorited-by-count'} onClick={() => {
-                                if (favoritedByCount > 0) {
+                                if (favoritedByCount > 0){
+                                    setFavoritedByUsernameList(localFinalFavoritedByUsernameList);
                                     setShowVoteByList(false);
                                     setShowFavoritedByList(true);
                                 }
@@ -743,84 +701,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
 
                 </div>
-                {(post.file) ?
-                    (showPostPopup && fileBlob && postViewer && postAdmin) && (
-                        <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
-                                   profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
-                                   setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption}
-                                   postFile={fileBlob} year={releaseYear} month={releaseMonth} day={releaseDay}
-                                   hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
-                    :
-                    (showPostPopup && postViewer && postAdmin) && (
-                        <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
-                                   profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
-                                   setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
-                                   month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id}
-                                   userId={postViewer.id}/>)
-                }
+
                 {showOverlay && (
                     <div className={'post-full-size-profile-photo-overlay'} onClick={closeOverlay}>
                         <img src={overlayImageUrl} alt="Full Size" className="full-size-image"/>
                     </div>
                 )}
             </div>
-
-            <PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList}
-                           popupList={favoritedByUsernameList}/>
-            <PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList}
-                           popupList={voteByUsernameList}/>
-
-
-            {(post.file) ?
-                (showPostPopup && fileBlob && postViewer && postAdmin) && (
-                    <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
-                               profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
-                               setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob}
-                               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
-                               minute={releaseMinute} second={releaseSecond}
-                               postId={post.post_id} userId={postViewer.id}/>)
-                :
-                (showPostPopup && postViewer && postAdmin) && (
-                    <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
-                               profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
-                               setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
-                               month={releaseMonth} day={releaseDay} hour={releaseHour} minute={releaseMinute}
-                               second={releaseSecond} postId={post.post_id}
-                               userId={postViewer.id}/>)
-            }
-
-            <animated.div
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transform: showDeletePostPopup ? inTransformDeletePost : outTransformDeletePost,
-                    zIndex: 1000
-                }}
-            >
-                <div className="delete-post-overlay" onClick={() => setShowDeletePostPopup(false)}></div>
-
-                <div className="delete-post-modal">
-                    <h3 className="delete-post-header">Are you sure you want to delete this post?</h3>
-                    {deletePostError && <p className="delete-post-error">{deletePostErrorPrompt}</p>}
-
-                    <div className={'delete-post-buttons-wrapper'}>
-                        <button className="delete-post-button-no"
-                                onClick={() => setShowDeletePostPopup(false)}>No
-                        </button>
-                        <button className="delete-post-button-yes" data-testid="delete-post-button-yes"
-                                id="delete-post-button-yes"
-                                onClick={() => {onDeletePost(post.post_id, postViewer.id);}}>Yes
-                        </button>
-                    </div>
-                </div>
-            </animated.div>
         </div>
     );
 }
