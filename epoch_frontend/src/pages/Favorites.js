@@ -27,6 +27,10 @@ function Favorites() {
                     setIsLoading(false);
                 });
         }
+        else
+        {
+            setIsLoading(false);
+        }
     }, [updateUser, user]);
 
     if (!user) {
