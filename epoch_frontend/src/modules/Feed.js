@@ -41,7 +41,7 @@ export default function Feed({
     const [noMoreTopPosts, setNoMoreTopPosts] = useState(false);
     const [offset, setOffset] = useState(0);
     const limit = 20; // must be bigger than toRemove
-    const maxPosts = 25;
+    const maxPosts = 300;
     const toRemove = 15; // Must be smaller than limit
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
@@ -141,47 +141,47 @@ export default function Feed({
 
     }, [previousPosts, toRemove]);
 
-    const onNewTopPosts = useCallback((finalOffset) =>
-    {
-        let finalToSetFeedPosts = feedPosts;
-
-        if (previousPosts.length === 0)
-        {
-            setNoMoreTopPosts(true);
-            setAllowScrollToTop(false);
-            return;
-        }
-
-        let toAdd = previousPosts.slice(previousPosts.length - limit);
-        let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
-        setPreviousPosts(newPreviousPosts);
-
-        if (toAdd.length + feedPosts.length > maxPosts)
-        {
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
-            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-            setOffset(prevOffset => prevOffset - toRemove - toRemove);
-            setNoMorePosts(false);
-        }
-        else
-        {
-            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-        }
-
-        setFeedPosts(finalToSetFeedPosts);
-
-        if (previousPosts.length === 0)
-        {
-            setNoMoreTopPosts(true);
-            setAllowScrollToTop(false);
-        }
-    }, [feedPosts, previousPosts, toRemove]);
+    // const onNewTopPosts = useCallback((finalOffset) =>
+    // {
+    //     let finalToSetFeedPosts = feedPosts;
+    //
+    //     if (previousPosts.length === 0)
+    //     {
+    //         setNoMoreTopPosts(true);
+    //         setAllowScrollToTop(false);
+    //         return;
+    //     }
+    //
+    //     let toAdd = previousPosts.slice(previousPosts.length - limit);
+    //     let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
+    //     setPreviousPosts(newPreviousPosts);
+    //
+    //     if (toAdd.length + feedPosts.length > maxPosts)
+    //     {
+    //         finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
+    //         finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+    //         setOffset(prevOffset => prevOffset - toRemove - toRemove);
+    //         setNoMorePosts(false);
+    //     }
+    //     else
+    //     {
+    //         finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+    //     }
+    //
+    //     setFeedPosts(finalToSetFeedPosts);
+    //
+    //     if (previousPosts.length === 0)
+    //     {
+    //         setNoMoreTopPosts(true);
+    //         setAllowScrollToTop(false);
+    //     }
+    // }, [feedPosts, previousPosts, toRemove]);
 
     const refreshFeedPosts = useCallback((reset, fromTop) =>
     {
 
         let finalOffset = reset ? 0 : (offset);
-        let finalFeedPosts = reset ? [] : feedPosts;
+        let finalFeedPosts = (reset || feedPosts.length > maxPosts) ? [] : feedPosts;
 
         if (reset)
         {
@@ -191,13 +191,13 @@ export default function Feed({
             setAllowScrollToTop(false);
         }
 
-        if (fromTop)
-        {
-            onNewTopPosts(finalOffset);
-            setIsLoading(false);
-            setLoadingTop(false);
-            return;
-        }
+        // if (fromTop)
+        // {
+        //     onNewTopPosts(finalOffset);
+        //     setIsLoading(false);
+        //     setLoadingTop(false);
+        //     return;
+        // }
 
         if (!posts)
         {
@@ -432,7 +432,7 @@ export default function Feed({
             </animated.div>
 
             {(postToEdit.file) ? (
-                (fileBlob) &&
+                (showPostPopup && fileBlob) &&
                 <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
                profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
                setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption} postFile={fileBlob}
@@ -440,6 +440,7 @@ export default function Feed({
                minute={releaseMinute} second={releaseSecond}
                postId={postToEditId} userId={currentUser.id}/>
             ) : (
+                (showPostPopup) &&
                 <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
                profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
                setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption}
