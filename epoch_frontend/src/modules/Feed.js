@@ -115,8 +115,9 @@ export default function Feed({
         //
         // }
 
-        finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove);
+        // finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
+
 
         if(finalOffset > 0) {
             setAllowScrollToTop(true);
@@ -142,41 +143,41 @@ export default function Feed({
 
     }//, [previousPosts, toRemove]);
 
-    const onNewTopPosts = (finalOffset) =>
-    {
-        let finalToSetFeedPosts = feedPosts;
-
-        if (previousPosts.length === 0)
-        {
-            setNoMoreTopPosts(true);
-            setAllowScrollToTop(false);
-            return;
-        }
-
-        let toAdd = previousPosts.slice(previousPosts.length - limit);
-        let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
-        setPreviousPosts(newPreviousPosts);
-
-        if (toAdd.length + feedPosts.length > maxPosts)
-        {
-            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
-            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-            setOffset(prevOffset => prevOffset - toRemove - toRemove);
-            setNoMorePosts(false);
-        }
-        else
-        {
-            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-        }
-
-        setFeedPosts(finalToSetFeedPosts);
-
-        if (previousPosts.length === 0)
-        {
-            setNoMoreTopPosts(true);
-            setAllowScrollToTop(false);
-        }
-    }//, [feedPosts, previousPosts, toRemove]);
+    // const onNewTopPosts = (finalOffset) =>
+    // {
+    //     let finalToSetFeedPosts = feedPosts;
+    //
+    //     if (previousPosts.length === 0)
+    //     {
+    //         setNoMoreTopPosts(true);
+    //         setAllowScrollToTop(false);
+    //         return;
+    //     }
+    //
+    //     let toAdd = previousPosts.slice(previousPosts.length - limit);
+    //     let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
+    //     setPreviousPosts(newPreviousPosts);
+    //
+    //     if (toAdd.length + feedPosts.length > maxPosts)
+    //     {
+    //         finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
+    //         finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+    //         setOffset(prevOffset => prevOffset - toRemove - toRemove);
+    //         setNoMorePosts(false);
+    //     }
+    //     else
+    //     {
+    //         finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+    //     }
+    //
+    //     setFeedPosts(finalToSetFeedPosts);
+    //
+    //     if (previousPosts.length === 0)
+    //     {
+    //         setNoMoreTopPosts(true);
+    //         setAllowScrollToTop(false);
+    //     }
+    // }//, [feedPosts, previousPosts, toRemove]);
 
     const refreshFeedPosts = (reset, fromTop) =>
     {
@@ -192,13 +193,13 @@ export default function Feed({
             setAllowScrollToTop(false);
         }
 
-        if (fromTop)
-        {
-            onNewTopPosts(finalOffset);
-            setIsLoading(false);
-            setLoadingTop(false);
-            return;
-        }
+        // if (fromTop)
+        // {
+        //     onNewTopPosts(finalOffset);
+        //     setIsLoading(false);
+        //     setLoadingTop(false);
+        //     return;
+        // }
 
         if (!posts)
         {
