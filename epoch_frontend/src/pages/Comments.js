@@ -11,6 +11,7 @@ import { UserContext } from '../services/UserContext';
 import { getUserInfo } from "../services/user";
 import CommentPopup from "../modules/CommentPopup";
 import {useNavigate} from "react-router-dom";
+import Feed from "../modules/Feed";
 
 
 
@@ -118,7 +119,10 @@ function Comments() {
                 <div className={"post-comments-page-wrapper"}>
                     <div className={"post-comments-page-feed"}>
             <div className={'comments-post-wrapper'}>
-        {commentsPost && (<Post key={ commentsPost.post_id } post={commentsPost} postViewer={user} refreshFeed={refreshComments} setRefreshFeed={setRefreshComments} isInFavorites={false}></Post>)}
+        {commentsPost && (
+            // <Post key={ commentsPost.post_id } post={commentsPost} postViewer={user} refreshFeed={refreshComments} setRefreshFeed={setRefreshComments} isInFavorites={false}></Post>
+            <Feed feedUsername={user.username} feedUserId={commentsPost.user_id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={true} posts={[commentsPost]} isInFavorites={false} isInHashtags={false} hashtag={null}></Feed>
+        )}
             </div>
 
       {(<button className={`new-comment-button ${showNewCommentPopup ? 'rotate' : ''}`}
@@ -141,7 +145,7 @@ function Comments() {
       </div>
       )}
       <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup} username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
-        <CommentPopup showPopup={showNewCommentPopup} setShowPopup={setShowNewCommentPopup} postId={postId} username={user.username} profilePic={user.profile_pic_data} refreshComments={refreshComments} setRefreshComments={setRefreshComments}/>
+    <CommentPopup showPopup={showNewCommentPopup} setShowPopup={setShowNewCommentPopup} postId={postId} username={user.username} profilePic={user.profile_pic_data} refreshComments={refreshComments} setRefreshComments={setRefreshComments}/>
     </>
   )
 }

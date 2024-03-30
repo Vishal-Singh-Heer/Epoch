@@ -317,6 +317,7 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
                   i):
     post_dict = {}
     post_dict["post_id"] = current_post[0]
+    post_dict["user_id"] = current_post[1]
     post_dict["profile_picture"] = profile_picture_url
     post_dict["profile_picture_type"] = profile_picture_type
     post_dict["profile_picture_name"] = profile_picture_name
