@@ -300,7 +300,7 @@ export default function Feed({
         }
 
         setRefreshFeed(false);
-    }, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
+    }, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, setRefreshFeed]);
 
     useEffect(() => {
         if (inView && !noMorePosts && !isLoading) {
