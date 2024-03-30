@@ -42,7 +42,7 @@ export default function Feed({
     const [offset, setOffset] = useState(0);
     const limit = 20; // must be bigger than toRemove
     const maxPosts = 25;
-    const toRemove = 15; // Must be smaller than maxPosts
+    const toRemove = 15; // Must be smaller than limit
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
     const [ref, inView] = useInView({threshold: 0.1, });
@@ -104,10 +104,20 @@ export default function Feed({
     {
         let finalToSetFeedPosts = finalFeedPosts;
 
-        setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-        finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
-        finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
+
+        if (finalFeedPosts.length - toRemove > maxPosts)
+        {
+            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, toRemove + (maxPosts - toRemove));
+        }
+        else
+        {
+            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
+        }
+
+        finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
         if(finalOffset > 0) {
             setAllowScrollToTop(true);
