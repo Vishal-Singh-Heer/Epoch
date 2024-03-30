@@ -2,10 +2,19 @@ import React, {useState, useEffect} from 'react';
 import '../styles/Feed.css';
 import {Spinner} from "./Spinner";
 import Post from "./Post";
-import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts, getFavoritePosts} from '../services/post.js'
+import {
+    getAllUserPosts,
+    getFollowedUsersPost,
+    getAllHashtagPosts,
+    getFavoritePosts,
+    deletePost
+} from '../services/post.js'
 import {useRef} from "react";
-// import {useInView} from "react-intersection-observer";
+import {useInView} from "react-intersection-observer";
 import { useCallback } from 'react';
+import {animated, useSpring} from "react-spring";
+import PopupUserList from "./PopupUserList";
+import PostPopup from "./PostPopup";
 
 export default function Feed({
                                  feedUsername,
@@ -35,8 +44,61 @@ export default function Feed({
     const maxPosts = 25;
     const toRemove = 15; // Must be smaller than maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
-    // const bottomElementRef = useRef(null);
-    // const [ref, inView] = useInView({threshold: 0.1, });
+    const bottomElementRef = useRef(null);
+    const [ref, inView] = useInView({threshold: 0.1, });
+    const [showDeletePostPopup, setShowDeletePostPopup] = useState(false);
+    const [deletePostError, setDeletePostError] = useState(false);
+    const [deletePostErrorPrompt, setDeletePostErrorPrompt] = useState('');
+    const [postToDelete, setPostToDelete] = useState(-1);
+    const [showFavoritedByList, setShowFavoritedByList] = useState(false);
+    const [showVoteByList, setShowVoteByList] = useState(false);
+    const [favoritedByUsernameList, setFavoritedByUsernameList] = useState( []);
+    const [voteByUsernameList, setVoteByUsernameList] = useState( []);
+    const [releaseMonth, setReleaseMonth] = useState('');
+    const [releaseDay, setReleaseDay] = useState(-1);
+    const [releaseYear, setReleaseYear] = useState(-1);
+    const [releaseHour, setReleaseHour] = useState('');
+    const [releaseMinute, setReleaseMinute] = useState(-1);
+    const [releaseSecond, setReleaseSecond] = useState(-1);
+    const [showPostPopup, setShowPostPopup] = useState(false);
+    const [fileBlob, setFileBlob] = useState(null);
+    const [postToEditId, setPostToEditId] = useState(-1);
+    const [postToEditCaption, setPostToEditCaption] = useState('');
+    const [postToEdit, setPostToEdit] = useState({});
+
+    const {transform: inTransformDeletePost} = useSpring({
+        transform: `translateY(${showDeletePostPopup ? 0 : 100}vh)`,
+        config: {duration: 300},
+    });
+
+    const {transform: outTransformDeletePost} = useSpring({
+        transform: `translateY(${showDeletePostPopup ? 0 : -100}vh)`,
+        config: {duration: 300},
+    });
+
+    const onDeletePost = (postId, userId) => {
+
+        setDeletePostError(true);
+        setDeletePostErrorPrompt('Deleting post...');
+
+        deletePost(postId, userId)
+            .then(() => {
+                setDeletePostError(false);
+                setDeletePostErrorPrompt('');
+                setShowDeletePostPopup(false);
+                setRefreshFeed(true);
+            })
+            .catch((error) => {
+                setShowDeletePostPopup(true);
+                setDeletePostError(true);
+                setDeletePostErrorPrompt(error);
+
+                setTimeout(() => {
+                    setDeletePostError(false);
+                    setDeletePostErrorPrompt('');
+                }, 5000);
+            });
+    }
 
     const onNewBottomPosts = useCallback((data, finalFeedPosts, finalOffset) =>
     {
@@ -232,12 +294,12 @@ export default function Feed({
         setRefreshFeed(false);
     }, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
 
-    // useEffect(() => {
-    //     if (inView && !noMorePosts && !isLoading) {
-    //         setIsLoading(true);
-    //         refreshFeedPosts(false, false);
-    //     }
-    // }, [inView, noMorePosts, isLoading, refreshFeedPosts]);
+    useEffect(() => {
+        if (inView && !noMorePosts && !isLoading) {
+            setIsLoading(true);
+            refreshFeedPosts(false, false);
+        }
+    }, [inView, noMorePosts, isLoading, refreshFeedPosts]);
 
     useEffect(() => {
         if (firstRender) {
@@ -281,21 +343,102 @@ export default function Feed({
 
                         {feedPosts.length > 0 && (
                             feedPosts.map((item) => (
-                                <Post key={item.post_id} post={item} postViewer={currentUser} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} isInFavorites={isInFavorites}/>
+                                <Post key={item.post_id} post={item} postViewer={currentUser}
+                                      isInFavorites={isInFavorites} setDeletePostError={setDeletePostError}
+                                      setDeletePostErrorPrompt={setDeletePostErrorPrompt}
+                                      setShowDeletePostPopup={setShowDeletePostPopup} setPostToDelete={setPostToDelete}
+                                      favoritedByUsernameList={item.favorited_by_usernames}
+                                      setFavoritedByUsernameList={setFavoritedByUsernameList}
+                                      setShowFavoritedByList={setShowFavoritedByList}
+                                      voteByUsernameList={item.votes_by_usernames}
+                                      setVoteByUsernameList={setVoteByUsernameList}
+                                      setShowVoteByList={setShowVoteByList}
+                                      setReleaseMonth={setReleaseMonth}
+                                      setReleaseDay={setReleaseDay}
+                                      setReleaseYear={setReleaseYear}
+                                      setReleaseHour={setReleaseHour}
+                                      setReleaseMinute={setReleaseMinute}
+                                      setReleaseSecond={setReleaseSecond}
+                                      setShowPostPopup={setShowPostPopup}
+                                      showPostPopup={showPostPopup}
+                                      setFileBlob={setFileBlob}
+                                      setPostToEditId={setPostToEditId}
+                                      setPostToEditCaption={setPostToEditCaption}
+                                      setPostToEdit={setPostToEdit}/>
+
                             ))
                         )}
 
-                        {(noMorePosts && feedPosts.length > 0) && <h3 className={'no-more-posts'}>No more posts to show</h3>}
+                        {(noMorePosts && feedPosts.length > 0) &&
+                            <h3 className={'no-more-posts'}>No more posts to show</h3>}
                     </div>
 
                     {(currentUser && ((!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId)) && !viewingOnly) && (
-                        <button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`} onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
+                        <button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
+                                onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
 
                     {isLoading && (<Spinner className={'feed-loading'}/>)}
-                    {/*<div ref={bottomElementRef}/>*/}
-                    {/*<div ref={ref}/>*/}
+                    <div ref={bottomElementRef}/>
+                    <div ref={ref}/>
                 </div>
+            )}
+
+            <PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList}
+                           popupList={favoritedByUsernameList}/>
+            <PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList}
+                           popupList={voteByUsernameList}/>
+
+            <animated.div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transform: showDeletePostPopup ? inTransformDeletePost : outTransformDeletePost,
+                    zIndex: 1000
+                }}
+            >
+                <div className="delete-post-overlay" onClick={() => setShowDeletePostPopup(false)}></div>
+
+                <div className="delete-post-modal">
+                    <h3 className="delete-post-header">Are you sure you want to delete this post?</h3>
+                    {deletePostError && <p className="delete-post-error">{deletePostErrorPrompt}</p>}
+
+                    <div className={'delete-post-buttons-wrapper'}>
+                        <button className="delete-post-button-no"
+                                onClick={() => setShowDeletePostPopup(false)}>No
+                        </button>
+                        <button className="delete-post-button-yes" data-testid="delete-post-button-yes"
+                                id="delete-post-button-yes"
+                                onClick={() => {
+                                    onDeletePost(postToDelete, currentUser.id);
+                                }}>Yes
+                        </button>
+                    </div>
+                </div>
+            </animated.div>
+
+            {(postToEdit.file) ? (
+                (showPostPopup && fileBlob) &&
+                <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
+               profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
+               setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption} postFile={fileBlob}
+               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
+               minute={releaseMinute} second={releaseSecond}
+               postId={postToEditId} userId={currentUser.id}/>
+            ) : (
+                (showPostPopup) &&
+                <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={currentUser.username}
+               profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed}
+               setRefreshFeed={setRefreshFeed} editPost={true} caption={postToEditCaption}
+               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
+               minute={releaseMinute} second={releaseSecond}
+               postId={postToEditId} userId={currentUser.id}/>
             )}
         </>
     )
