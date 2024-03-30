@@ -19,6 +19,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
     const [countUnreadNotifications, setCountUnreadNotifications] = useState(0);
     const [loadMorePrompt, setLoadMorePrompt] = useState('Load more');
     const [markAllAsReadPrompt, setMarkAllAsReadPrompt] = useState('Mark all as read');
+    const getNotificationsEvery = 10000; // 10 seconds
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
         opacity: showNotifications ? 1 : 0,
@@ -103,7 +104,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
         if (!showNotifications && !isLoading ) {
             const interval = setInterval(() => {
                 getNotifications();
-            }, 90000000);
+            }, getNotificationsEvery);
 
             return () => clearInterval(interval);
         }

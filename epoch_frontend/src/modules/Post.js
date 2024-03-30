@@ -6,7 +6,6 @@ import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlin
 import '../styles/Post.css';
 import {useNavigate} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
-import PostPopup from "./PostPopup";
 import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
 import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
@@ -22,10 +21,9 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
     const navigate = useNavigate();
     const [showOverlay, setShowOverlay] = useState(false);
     const [overlayImageUrl, setOverlayImageUrl] = useState('');
-    const [postAdmin, setPostAdmin] = useState(postViewer && postViewer.username === post.username);
+    const postAdmin= postViewer && postViewer.username === post.username;
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [deleted, setDeleted] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [updatingMessage, setUpdatingMessage] = useState('');
     const [favorited, setFavorited] = useState(false);
@@ -197,27 +195,26 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
         let visible = false;
 
         if (postIsInThePast() || postAdmin) {
-            if (!deleted) {
-                if ( (isInFavorites && favorited) || !isInFavorites) {
-                    if (usernames.length > 0) {
-                        for (let i = 0; i < usernames.length && !visible; i++) {
-                            if (postViewer && postViewer.username === usernames[i]) {
-                                visible = true;
-                            }
+            if ( (isInFavorites && favorited) || !isInFavorites) {
+                if (usernames.length > 0) {
+                    for (let i = 0; i < usernames.length && !visible; i++) {
+                        if (postViewer && postViewer.username === usernames[i]) {
+                            visible = true;
                         }
+                    }
 
-                        if (!visible)
-                        {
-                            visible = postAdmin;
-                        }
-                    }
-                    else
+                    if (!visible)
                     {
-                        visible = true;
+                        visible = postAdmin;
                     }
+                }
+                else
+                {
+                    visible = true;
                 }
             }
         }
+
 
 
         return visible;
@@ -549,7 +546,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                 setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
             }
         } else if (!favorited && postViewer) {
-            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            let updatedFavoritedByUsernameList = localFinalFavoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
 
             if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(localFinalFavoritedByUsernameList)) {
                 setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
