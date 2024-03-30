@@ -13,13 +13,13 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
     const {user} = useContext(UserContext);
     const[notifications, setNotifications] = useState((user && user.notifications) || []);
     const [offset, setOffset] = useState(0);
-    const limit =  useState(10);
+    const limit =  10;
     const [isLoading, setIsLoading] = useState(false);
     const [noMoreNotifications, setNoMoreNotifications] = useState(false);
     const [countUnreadNotifications, setCountUnreadNotifications] = useState(0);
     const [loadMorePrompt, setLoadMorePrompt] = useState('Load more');
     const [markAllAsReadPrompt, setMarkAllAsReadPrompt] = useState('Mark all as read');
-    const getNotificationsEvery = 90000000; // 10 seconds
+    const getNotificationsEvery = 3000; // 3 seconds
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
         opacity: showNotifications ? 1 : 0,
