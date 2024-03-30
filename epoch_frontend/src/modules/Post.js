@@ -627,6 +627,14 @@ const renderCaptionWithHighlights = (toRender) => {
         }
     }, [vote, voteByUsernameList, postViewer, post, voteResult]);
 
+    const navigateToProfile = () => {
+        if (postAdmin){
+            navigate(`/profile`);
+        } else {
+            navigate(`/${post.username}`);
+        }
+    }
+
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
              style={{display: ( isPostVisible() ) ? 'block' : 'none'}}>
@@ -639,7 +647,7 @@ const renderCaptionWithHighlights = (toRender) => {
                     </div>
                     <div className="post-header-info">
                         <h3 className={'post-username'}
-                            onClick={() => navigate(`/${post.username}`)}>{post.username}</h3>
+                            onClick={() => navigateToProfile()}>{post.username}</h3>
                         <p className={'post-date'}>{getReleaseFormat()}</p>
                     </div>
                 </div>
