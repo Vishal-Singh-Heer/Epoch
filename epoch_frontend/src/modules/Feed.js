@@ -4,7 +4,7 @@ import {Spinner} from "./Spinner";
 import Post from "./Post";
 import {getAllUserPosts, getFollowedUsersPost, getAllHashtagPosts, getFavoritePosts} from '../services/post.js'
 import {useRef} from "react";
-import {useInView} from "react-intersection-observer";
+// import {useInView} from "react-intersection-observer";
 import { useCallback } from 'react';
 
 export default function Feed({
@@ -31,12 +31,12 @@ export default function Feed({
     const [allowScrollToTop, setAllowScrollToTop] = useState(false);
     const [noMoreTopPosts, setNoMoreTopPosts] = useState(false);
     const [offset, setOffset] = useState(0);
-    const limit = 20; // must be bigger tha maxPosts
+    const limit = 20; // must be bigger than toRemove
     const maxPosts = 25;
     const toRemove = 15; // Must be smaller than maxPosts
     const [previousPosts, setPreviousPosts] = useState([]);
     const bottomElementRef = useRef(null);
-    const [ref, inView] = useInView({threshold: 0.1, });
+    // const [ref, inView] = useInView({threshold: 0.1, });
 
     const onNewBottomPosts = useCallback((data, finalFeedPosts, finalOffset) =>
     {
@@ -232,16 +232,12 @@ export default function Feed({
         setRefreshFeed(false);
     }, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
 
-
-
-    useEffect(() => {
-        if (inView && !noMorePosts && !isLoading) {
-            setIsLoading(true);
-            refreshFeedPosts(false, false);
-        }
-    }, [inView, noMorePosts, isLoading, refreshFeedPosts]);
-
-
+    // useEffect(() => {
+    //     if (inView && !noMorePosts && !isLoading) {
+    //         setIsLoading(true);
+    //         refreshFeedPosts(false, false);
+    //     }
+    // }, [inView, noMorePosts, isLoading, refreshFeedPosts]);
 
     useEffect(() => {
         if (firstRender) {
@@ -299,7 +295,7 @@ export default function Feed({
 
                     {isLoading && (<Spinner className={'feed-loading'}/>)}
                     <div ref={bottomElementRef}/>
-                    <div ref={ref}/>
+                    {/*<div ref={ref}/>*/}
 
                 </div>
             )}
