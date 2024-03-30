@@ -100,7 +100,7 @@ export default function Feed({
             });
     }
 
-    const onNewBottomPosts = (data, finalFeedPosts, finalOffset) =>
+    const onNewBottomPosts = useCallback((data, finalFeedPosts, finalOffset) =>
     {
         let finalToSetFeedPosts = finalFeedPosts;
 
@@ -111,13 +111,11 @@ export default function Feed({
         // }
         // else
         // {
-        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-        //
+        //    setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
+        //    finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
         // }
 
-        // finalToSetFeedPosts = finalToSetFeedPosts.slice(toRemove);
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
-
 
         if(finalOffset > 0) {
             setAllowScrollToTop(true);
@@ -141,45 +139,45 @@ export default function Feed({
         setIsLoading(false);
         setLoadingTop(false);
 
-    }//, [previousPosts, toRemove]);
+    }, [previousPosts, toRemove]);
 
-    // const onNewTopPosts = (finalOffset) =>
-    // {
-    //     let finalToSetFeedPosts = feedPosts;
-    //
-    //     if (previousPosts.length === 0)
-    //     {
-    //         setNoMoreTopPosts(true);
-    //         setAllowScrollToTop(false);
-    //         return;
-    //     }
-    //
-    //     let toAdd = previousPosts.slice(previousPosts.length - limit);
-    //     let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
-    //     setPreviousPosts(newPreviousPosts);
-    //
-    //     if (toAdd.length + feedPosts.length > maxPosts)
-    //     {
-    //         finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
-    //         finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-    //         setOffset(prevOffset => prevOffset - toRemove - toRemove);
-    //         setNoMorePosts(false);
-    //     }
-    //     else
-    //     {
-    //         finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
-    //     }
-    //
-    //     setFeedPosts(finalToSetFeedPosts);
-    //
-    //     if (previousPosts.length === 0)
-    //     {
-    //         setNoMoreTopPosts(true);
-    //         setAllowScrollToTop(false);
-    //     }
-    // }//, [feedPosts, previousPosts, toRemove]);
+    const onNewTopPosts = useCallback((finalOffset) =>
+    {
+        let finalToSetFeedPosts = feedPosts;
 
-    const refreshFeedPosts = (reset, fromTop) =>
+        if (previousPosts.length === 0)
+        {
+            setNoMoreTopPosts(true);
+            setAllowScrollToTop(false);
+            return;
+        }
+
+        let toAdd = previousPosts.slice(previousPosts.length - limit);
+        let newPreviousPosts = previousPosts.slice(0, previousPosts.length - limit);
+        setPreviousPosts(newPreviousPosts);
+
+        if (toAdd.length + feedPosts.length > maxPosts)
+        {
+            finalToSetFeedPosts = finalToSetFeedPosts.slice(0, finalToSetFeedPosts.length - toRemove);
+            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+            setOffset(prevOffset => prevOffset - toRemove - toRemove);
+            setNoMorePosts(false);
+        }
+        else
+        {
+            finalToSetFeedPosts = toAdd.concat(finalToSetFeedPosts);
+        }
+
+        setFeedPosts(finalToSetFeedPosts);
+
+        if (previousPosts.length === 0)
+        {
+            setNoMoreTopPosts(true);
+            setAllowScrollToTop(false);
+        }
+    }, [feedPosts, previousPosts, toRemove]);
+
+    const refreshFeedPosts = useCallback((reset, fromTop) =>
     {
 
         let finalOffset = reset ? 0 : (offset);
@@ -193,13 +191,13 @@ export default function Feed({
             setAllowScrollToTop(false);
         }
 
-        // if (fromTop)
-        // {
-        //     onNewTopPosts(finalOffset);
-        //     setIsLoading(false);
-        //     setLoadingTop(false);
-        //     return;
-        // }
+        if (fromTop)
+        {
+            onNewTopPosts(finalOffset);
+            setIsLoading(false);
+            setLoadingTop(false);
+            return;
+        }
 
         if (!posts)
         {
@@ -302,7 +300,7 @@ export default function Feed({
         }
 
         setRefreshFeed(false);
-    }//, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
+    }, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
 
     useEffect(() => {
         if (inView && !noMorePosts && !isLoading) {
