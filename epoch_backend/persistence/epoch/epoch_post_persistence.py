@@ -30,10 +30,10 @@ class epoch_post_persistence(post_persistence):
         connection.commit()
 
         if new_post.caption:
-            username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
+            username_reg = re.compile(r'(@[a-zA-Z0-9_]+)')
             words = re.split(username_reg, new_post.caption)
-            mentioned = words
-
+            mentioned = [word for word in words if word.startswith('@')]
+            mentioned = [mention[1:] for mention in mentioned] # remove the '@' from the username
 
             if len(mentioned) > 0:
                 cursor.execute("SELECT user_id, username, name FROM users WHERE username IN %s", (tuple(mentioned),))
@@ -45,7 +45,7 @@ class epoch_post_persistence(post_persistence):
                     cursor.execute("SELECT * FROM notifications WHERE user_id=%s AND target_id=%s AND type=%s", (mentioned_user[0], post_id, "mention"))
                     mentioned_notification = cursor.fetchone()
 
-                    if not mentioned_notification:
+                    if not mentioned_notification and mentioned_user[0] != new_post.user_id:
                         cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, user_info[0], user_info[1]))
                         connection.commit()
 
@@ -175,17 +175,13 @@ class epoch_post_persistence(post_persistence):
                                (new_post.caption, new_post.release, post_id))
         connection.commit()
 
-        # if the old caption had a mention that was removed in the new caption, remove the notification
-        # if the new caption has a mention that was not in the old caption, add the notification
-
-
         new_mentioned = []
 
         if new_post.caption:
-            new_username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
+            new_username_reg = re.compile(r'(@[a-zA-Z0-9_]+)')
             new_words = re.split(new_username_reg, new_post.caption)
-            new_mentioned = new_words
-
+            new_mentioned = [word for word in new_words if word.startswith('@')]
+            new_mentioned = [mention[1:] for mention in new_mentioned]  # remove the '@' from the username
 
             if len(new_mentioned) > 0:
                 cursor.execute("SELECT user_id, username, name FROM users WHERE username IN %s", (tuple(new_mentioned),))
@@ -197,14 +193,15 @@ class epoch_post_persistence(post_persistence):
                     cursor.execute("SELECT * FROM notifications WHERE user_id=%s AND target_id=%s AND type=%s", (mentioned_user[0], post_id, "mention"))
                     mentioned_notification = cursor.fetchone()
 
-                    if not mentioned_notification:
+                    if not mentioned_notification and mentioned_user[0] != new_post.user_id:
                         cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, user_info[0], user_info[1]))
                         connection.commit()
 
         if old_post_caption:
-            old_username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
+            old_username_reg = re.compile(r'(@[a-zA-Z0-9_]+)')
             old_words = re.split(old_username_reg, old_post_caption)
-            old_mentioned = old_words
+            old_mentioned = [word for word in old_words if word.startswith('@')]
+            old_mentioned = [mention[1:] for mention in old_mentioned]  # remove the '@' from the username
 
             for old_mention in old_mentioned:
                 if old_mention not in new_mentioned:
