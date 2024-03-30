@@ -104,8 +104,6 @@ export default function Feed({
     {
         let finalToSetFeedPosts = finalFeedPosts;
 
-
-
         // if (finalFeedPosts.length - toRemove > maxPosts)
         // {
         //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove + (maxPosts - toRemove))));
@@ -113,10 +111,11 @@ export default function Feed({
         // }
         // else
         // {
-            setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
-            finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove);
+        //     setPreviousPosts(previousPosts.concat(finalFeedPosts.slice(0, toRemove)));
+        //
         // }
 
+        finalToSetFeedPosts = finalToSetFeedPosts.slice( toRemove);
         finalToSetFeedPosts = finalToSetFeedPosts.concat(data);
 
         if(finalOffset > 0) {
@@ -141,9 +140,9 @@ export default function Feed({
         setIsLoading(false);
         setLoadingTop(false);
 
-    } //, [previousPosts, toRemove]);
+    }//, [previousPosts, toRemove]);
 
-    const onNewTopPosts = useCallback((finalOffset) =>
+    const onNewTopPosts = (finalOffset) =>
     {
         let finalToSetFeedPosts = feedPosts;
 
@@ -177,9 +176,9 @@ export default function Feed({
             setNoMoreTopPosts(true);
             setAllowScrollToTop(false);
         }
-    }, [feedPosts, previousPosts, toRemove]);
+    }//, [feedPosts, previousPosts, toRemove]);
 
-    const refreshFeedPosts = useCallback((reset, fromTop) =>
+    const refreshFeedPosts = (reset, fromTop) =>
     {
 
         let finalOffset = reset ? 0 : (offset);
@@ -302,7 +301,7 @@ export default function Feed({
         }
 
         setRefreshFeed(false);
-    }, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
+    }//, [offset, feedPosts, posts, isInHashtags, hashtag, currentUser, isInFavorites, feedUserId, isInProfile, feedUsername, onNewBottomPosts, onNewTopPosts, setRefreshFeed]);
 
     useEffect(() => {
         if (inView && !noMorePosts && !isLoading) {
