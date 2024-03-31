@@ -120,8 +120,7 @@ function Comments() {
                     <div className={"post-comments-page-feed"}>
             <div className={'comments-post-wrapper'}>
         {commentsPost && (
-            // <Post key={ commentsPost.post_id } post={commentsPost} postViewer={user} refreshFeed={refreshComments} setRefreshFeed={setRefreshComments} isInFavorites={false}></Post>
-            <Feed feedUsername={user.username} feedUserId={commentsPost.user_id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={true} posts={[commentsPost]} isInFavorites={false} isInHashtags={false} hashtag={null}></Feed>
+            <Feed feedUsername={user.username} feedUserId={commentsPost.user_id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshComments} setRefreshFeed={setRefreshComments} viewingOnly={true} posts={[commentsPost]} isInFavorites={false} isInHashtags={false} hashtag={null}></Feed>
         )}
             </div>
 
