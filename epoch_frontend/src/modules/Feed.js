@@ -8,7 +8,7 @@ import {
     getAllHashtagPosts,
     getFavoritePosts,
     deletePost
-} from '../services/post.js'
+} from '../services/post.js';
 import {useRef} from "react";
 import {useInView} from "react-intersection-observer";
 import { useCallback } from 'react';

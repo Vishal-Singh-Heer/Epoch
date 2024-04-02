@@ -134,7 +134,7 @@ function Profile() {
                             });
                     }
 
-                    setIsLoading(false);
+                    // setIsLoading(false);
 
                 })
                 .catch(error => {
@@ -156,7 +156,7 @@ function Profile() {
                         setRedirectToLogin(true);
                     }
 
-                    setIsLoading(false);
+                    // setIsLoading(false);
                 });
         }
         else
@@ -181,7 +181,7 @@ function Profile() {
                     });
             }
 
-            setIsLoading(false);
+            // setIsLoading(false);
         }
     }, [setIsLoading, setIsCurrentUser, updateUser, user, username]);
 
