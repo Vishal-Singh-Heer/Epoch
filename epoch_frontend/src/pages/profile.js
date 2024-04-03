@@ -49,7 +49,7 @@ function Profile() {
     const [deleteAccountError, setDeleteAccountError] = useState(false);
     const [deleteAccountErrorPrompt, setDeleteAccountErrorPrompt] = useState("");
     const [deletingAccount, setDeletingAccount] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     const {transform: inTransformDelete} = useSpring({
         transform: `translateY(${showDeleteAccountPopup ? 0 : 100}vh)`,
