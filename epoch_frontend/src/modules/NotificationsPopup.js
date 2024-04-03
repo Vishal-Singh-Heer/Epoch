@@ -19,7 +19,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
     const [countUnreadNotifications, setCountUnreadNotifications] = useState(0);
     const [loadMorePrompt, setLoadMorePrompt] = useState('Load more');
     const [markAllAsReadPrompt, setMarkAllAsReadPrompt] = useState('Mark all as read');
-    const getNotificationsEvery = 3000; // 3 seconds
+    const getNotificationsEvery = 10000000; // 3 seconds
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
         opacity: showNotifications ? 1 : 0,

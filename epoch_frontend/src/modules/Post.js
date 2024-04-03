@@ -38,7 +38,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
     const [localFinalFavoritedByUsernameList, setLocalFinalFavoritedByUsernameList] = useState(favoritedByUsernameList);
     const [localFinalVoteByUsernameList, setLocalFinalVoteByUsernameList] = useState(voteByUsernameList);
     const [copiedMessage, setCopiedMessage] = useState('');
-    
+    const [isMobile, setIsMobile] = useState(false);
 
 
     useEffect(() => {
@@ -565,42 +565,46 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
     }, [post.votes, postViewer]);
 
     useEffect(() => {
-        if (favorited && postViewer) {
-            let updatedFavoritedByUsernameList = localFinalFavoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
-            updatedFavoritedByUsernameList.push({username:postViewer.username, user_id:postViewer.id});
+        if (postViewer) {
+            if (favorited && postViewer) {
+                let updatedFavoritedByUsernameList = localFinalFavoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+                updatedFavoritedByUsernameList.push({username: postViewer.username, user_id: postViewer.id});
 
-            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(localFinalFavoritedByUsernameList)) {
-                setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
-            }
-        } else if (!favorited && postViewer) {
-            let updatedFavoritedByUsernameList = localFinalFavoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+                if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(localFinalFavoritedByUsernameList)) {
+                    setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
+                }
+            } else if (!favorited && postViewer) {
+                let updatedFavoritedByUsernameList = localFinalFavoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
 
-            if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(localFinalFavoritedByUsernameList)) {
-                setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
+                if (JSON.stringify(updatedFavoritedByUsernameList) !== JSON.stringify(localFinalFavoritedByUsernameList)) {
+                    setLocalFinalFavoritedByUsernameList(updatedFavoritedByUsernameList);
+                }
             }
         }
     }, [favorited, localFinalFavoritedByUsernameList, postViewer, post, favoritedByCount]);
 
     useEffect(() => {
-        if (vote === 0) {
-            let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+        if (postViewer) {
+            if (vote === 0) {
+                let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
 
-            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
-                setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
-            }
-        } else if(vote === 1) {
-            let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
-            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:1});
+                if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
+                    setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
+                }
+            } else if (vote === 1) {
+                let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+                updatedVoteByUsernameList.push({user_id: postViewer.id, username: postViewer.username, vote: 1});
 
-            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
-                setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
-            }
-        } else {
-            let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
-            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:-1});
+                if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
+                    setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
+                }
+            } else {
+                let updatedVoteByUsernameList = localFinalVoteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+                updatedVoteByUsernameList.push({user_id: postViewer.id, username: postViewer.username, vote: -1});
 
-            if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
-                setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
+                if (JSON.stringify(updatedVoteByUsernameList) !== JSON.stringify(localFinalVoteByUsernameList)) {
+                    setLocalFinalVoteByUsernameList(updatedVoteByUsernameList);
+                }
             }
         }
     }, [vote, localFinalVoteByUsernameList, postViewer, post, voteResult]);
@@ -612,6 +616,18 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
             navigate(`/${post.username}`);
         }
     }
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
@@ -632,17 +648,27 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
 
                 <div className="post-header-right">
                     {updating && (<p className="updating-message">{updatingMessage}</p>)}
+                    {copiedMessage && (
+                        <div className={'copied-message'}>
+                            {copiedMessage}
+                        </div>
+                    )}
                     {error && (<p className="error-message">{errorMessage}</p>)}
                     {(postViewer && postAdmin && editable && !editing) && (
                         <BorderColorOutlinedIcon className="edit-post-button-icon" onClick={() => {
                             setPostToEdit(post);
                             onEditPost();
-                        }}></BorderColorOutlinedIcon>)}
+                        }}
+                        sx={{width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}
+                        ></BorderColorOutlinedIcon>)}
                     {(postViewer && postAdmin && !editing) && (
                         <DeleteForeverOutlinedIcon className="delete-post-button-icon" onClick={() => {
                             setShowDeletePostPopup(true);
                             setPostToDelete(post.post_id);
-                        }}></DeleteForeverOutlinedIcon>)}
+                        }}
+                        sx={{width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}
+                        ></DeleteForeverOutlinedIcon>)}
+
 
                 </div>
             </div>
@@ -677,14 +703,16 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                 <div className="post-footer">
                     {postViewer && (
                         <div className={'vote-buttons'}>
-                            <ArrowCircleUpSharpIcon className={`up-vote-button ${upVoted ? 'active' : ''}`}
+                            <ArrowCircleUpSharpIcon className={`up-vote-button ${upVoted ? 'active' : ''} custom-icon-size` }
                                                     onClick={() => {
                                                         if (vote === 1) {
                                                             onVotePost(post.post_id, postViewer.id, vote, 'removeUpVote');
                                                         } else {
                                                             onVotePost(post.post_id, postViewer.id, vote, 'upVote');
                                                         }
-                                                    }}></ArrowCircleUpSharpIcon>
+                                                    }}
+                                                    sx={{width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}
+                            ></ArrowCircleUpSharpIcon>
                             <button className={'vote-count'} onClick={() => {
                                 if (localFinalVoteByUsernameList.length > 0) {
                                     setVoteByUsernameList(localFinalVoteByUsernameList);
@@ -692,26 +720,28 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                                     setShowVoteByList(true);
                                 }
                             }}>{voteResult}</button>
-                            <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`}
+                            <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''} custom-icon-size`}
                                                       onClick={() => {
                                                           if (vote === -1) {
                                                               onVotePost(post.post_id, postViewer.id, vote, 'removeDownVote');
                                                           } else {
                                                               onVotePost(post.post_id, postViewer.id, vote, 'downVote');
                                                           }
-                                                      }}></ArrowCircleDownSharpIcon>
+                                                      }}
+                                                      sx={{width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}
+                            ></ArrowCircleDownSharpIcon>
                         </div>
                     )}
 
                     {((!showCommentsSection) && postViewer) && (
-                        <button className={"view-comments-button"}
-                                onClick={() => navigate(`/epoch/comments/${post.post_id}`)}><ForumOutlinedIcon/>
+                        <button className={"view-comments-button custom-icon-size"}
+                                onClick={() => navigate(`/epoch/comments/${post.post_id}`)}><ForumOutlinedIcon sx={{width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}></ForumOutlinedIcon>
                         </button>
                     )}
 
                     {postViewer && (
                         <div className={'favorite-button-wrapper'}>
-                            <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`}
+                            <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''} custom-icon-size`} sx={{width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}
                                                         onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
                             <button className={'favorited-by-count'} onClick={() => {
                                 if (favoritedByCount > 0){
@@ -722,17 +752,11 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                             }}>
                                 {favoritedByCount}</button>
                     </div>)}
-                    
-                    
 
-                    {postViewer && (
+                    {(
                         <div className={'share-button-wrapper'}>
-                            <ShareOutlinedIcon className={'share-button'} onClick={handleShare}></ShareOutlinedIcon>
-                            {copiedMessage && (
-                                <div className={'copied-message'}>
-                                    {copiedMessage}
-                                </div>
-                            )}
+                            <ShareOutlinedIcon className={'share-button custom-icon-size'} onClick={handleShare} sx={{width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}
+                            ></ShareOutlinedIcon>
                         </div>
                     )}
 

@@ -15,7 +15,6 @@ const options = {
     cert: fs.readFileSync(certPath),
 };
 
-
 app.use((req, res, next) => {
     if (!req.secure) {
         return res.redirect(`https://${req.hostname}${req.url}`);
