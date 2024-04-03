@@ -49,6 +49,7 @@ function Profile() {
     const [deleteAccountError, setDeleteAccountError] = useState(false);
     const [deleteAccountErrorPrompt, setDeleteAccountErrorPrompt] = useState("");
     const [deletingAccount, setDeletingAccount] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const {transform: inTransformDelete} = useSpring({
         transform: `translateY(${showDeleteAccountPopup ? 0 : 100}vh)`,
@@ -295,6 +296,18 @@ function Profile() {
 
     }
 
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     if ((!user && !userInfo) || deletingAccount) {
         return <Spinner/>
     }
@@ -346,12 +359,12 @@ function Profile() {
                             isCurrentUser ? (
                                 <div className={'profile-buttons-wrapper'}>
                                     <BorderColorOutlinedIcon className="edit-profile-button-icon"
-                                                             onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>
+                                                             onClick={() => setShowEditProfilePopup(!showEditProfilePopup)} sx={{ width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}></BorderColorOutlinedIcon>
                                     <FavoriteBorderOutlinedIcon className={'profile-favorite-button'}
-                                                                onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
+                                                                onClick={() => navigate('/epoch/favorites')} sx={{ width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}></FavoriteBorderOutlinedIcon>
                                     <DeleteForeverOutlinedIcon className={'profile-delete-account-button'}
                                     data-testid="profile-delete-account-button" id="profile-delete-account-button"
-                                                                onClick={() => setShowDeleteAccountPopup(true)}></DeleteForeverOutlinedIcon>
+                                                                onClick={() => setShowDeleteAccountPopup(true)} sx={{ width: (isMobile ? '1rem' : '1.5rem'), height: (isMobile ? '1rem' : '1.5rem')}}></DeleteForeverOutlinedIcon>
 
                                 </div>
 

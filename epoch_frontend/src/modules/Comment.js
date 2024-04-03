@@ -115,7 +115,7 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
 
               <div className="comment-header-right">
 
-                  {commentViewer.username === commentObject.username && (
+                  {commentViewer && commentViewer.username === commentObject.username && (
                       <DeleteForeverOutlinedIcon className="delete-comment-icon"
                                                  onClick={() => setShowDeleteCommentPopup(true)}/>)}
 
