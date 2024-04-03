@@ -10,6 +10,7 @@ import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
 import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 
 export default function Post({post, postViewer, isInFavorites, setShowDeletePostPopup, setPostToDelete, setShowFavoritedByList, setShowVoteByList, favoritedByUsernameList, voteByUsernameList, setFavoritedByUsernameList, setVoteByUsernameList, showPostPopup, setShowPostPopup, setReleaseMonth, setReleaseDay, setReleaseYear, setReleaseHour, setReleaseMinute, setReleaseSecond, setFileBlob, setPostToEditId, setPostToEditCaption, setPostToEdit}) {
     const captionCharLimit = 240;
@@ -36,6 +37,8 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
     const [voteResult, setVoteResult] = useState(0);
     const [localFinalFavoritedByUsernameList, setLocalFinalFavoritedByUsernameList] = useState(favoritedByUsernameList);
     const [localFinalVoteByUsernameList, setLocalFinalVoteByUsernameList] = useState(voteByUsernameList);
+    const [copiedMessage, setCopiedMessage] = useState('');
+    
 
 
     useEffect(() => {
@@ -62,6 +65,28 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
             setEditing(false);
         }
     }, [showPostPopup]);
+
+
+    const handleShare = () => {
+        const shareURL = `${window.location.origin}/epoch/comments/${post.post_id}`;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(shareURL)
+                .then(() => {
+                    setCopiedMessage('Copied!');
+                    setTimeout(() => {
+                        setCopiedMessage('');
+                    }, 3000); 
+                })
+                .catch((error) => {
+                    console.error('Error copying URL:', error);
+                });
+        } else {
+            setCopiedMessage(shareURL); 
+            setTimeout(() => {
+                setCopiedMessage('');
+            }, 2000); 
+        }
+    };
 
     const handleProfilePhotoClick = (imageUrl) => {
         setOverlayImageUrl(imageUrl);
@@ -696,8 +721,20 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                                 }
                             }}>
                                 {favoritedByCount}</button>
-                        </div>)}
+                    </div>)}
+                    
+                    
 
+                    {postViewer && (
+                        <div className={'share-button-wrapper'}>
+                            <ShareOutlinedIcon className={'share-button'} onClick={handleShare}></ShareOutlinedIcon>
+                            {copiedMessage && (
+                                <div className={'copied-message'}>
+                                    {copiedMessage}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                 </div>
 
