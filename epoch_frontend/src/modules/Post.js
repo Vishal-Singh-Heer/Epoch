@@ -38,7 +38,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
     const [localFinalFavoritedByUsernameList, setLocalFinalFavoritedByUsernameList] = useState(favoritedByUsernameList);
     const [localFinalVoteByUsernameList, setLocalFinalVoteByUsernameList] = useState(voteByUsernameList);
     const [copiedMessage, setCopiedMessage] = useState('');
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState( window.innerWidth <= 768);
 
 
     useEffect(() => {
