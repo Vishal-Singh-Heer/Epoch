@@ -14,7 +14,7 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 
 export default function Post({post, postViewer, isInFavorites, setShowDeletePostPopup, setPostToDelete, setShowFavoritedByList, setShowVoteByList, favoritedByUsernameList, voteByUsernameList, setFavoritedByUsernameList, setVoteByUsernameList, showPostPopup, setShowPostPopup, setReleaseMonth, setReleaseDay, setReleaseYear, setReleaseHour, setReleaseMinute, setReleaseSecond, setFileBlob, setPostToEditId, setPostToEditCaption, setPostToEdit}) {
     const captionCharLimit = 240;
-    const timeAllowedToEditInSeconds = 30000;
+    const timeAllowedToEditInSeconds = 30;
     const [editable, setEditable] = useState(false);
     const [editing, setEditing] = useState(false);
     const [truncatedCaption, setTruncatedCaption] = useState((post && post.caption) ? post.caption.slice(0, captionCharLimit) + '...' : '');
