@@ -20,4 +20,4 @@ Epoch is a social media platform for time capsules. Write down your thoughts, fe
 - [Block Diagram](/epoch_project_documents/BlockDiagram)
 - [Testing Plan](/epoch_project_documents/TestingPlan)
 - [Sequence Diagrams](/epoch_project_documents/SequenceDiagrams)
-- [Manual Acceptance Tests](https://github.com/Aymanhki/Epoch/wiki/Manual-Acceptance-Tests)
+- [Manual Acceptance Tests / User Manual](https://github.com/Aymanhki/Epoch/wiki/Manual-Acceptance-Tests)

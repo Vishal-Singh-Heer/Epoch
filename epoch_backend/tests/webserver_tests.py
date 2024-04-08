@@ -31,7 +31,7 @@ class webserver_tests(unittest.TestCase):
     server_thread = None
     web_server = None
     # allow us to go in manually if something happens when deleting this account
-    username = "WebserverTests"+str(random.randint(1000,9999))
+    username = "WebserverTests" + str(random.randint(1000,9999))
     password = "Newuser1!"
     name = "some name"
     bio = "a big long bio with lots of words but no special characters."
@@ -724,9 +724,39 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response_json[0]["votes_count"], 0)
         self.delete_post()
 
+    def test_z10_get_notification_test(self):
+        self.register_test_user()
+        response = requests.get('http://localhost:8080/api/notifications/user/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id()), 'Offset': '0', 'Limit': '0'})
+        self.assertEqual(response.status_code, 200)
+        # check that we reject when fields missing
+        response = requests.get('http://localhost:8080/api/notifications/user/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 400)
+
+    def test_z11_read_notification_test(self):
+        self.register_test_user()
+        response = requests.put('http://localhost:8080/api/notifications/id/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id()), 'Notif-Id': '69420'})
+        self.assertEqual(response.status_code, 200)
+        response = requests.put('http://localhost:8080/api/notifications/id/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 400)
+
+    def test_z12_put_notification_test(self):
+        self.register_test_user()
+        response = requests.put('http://localhost:8080/api/notifications/read/all/user/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id())})
+        self.assertEqual(response.status_code, 200)
+        response = requests.put('http://localhost:8080/api/notifications/read/all/user/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 400)
+
 if __name__ == '__main__':
     unittest.main()
-
 
 # python -m pytest ./epoch_backend/tests/webserver_tests.py
 # python -m pytest --cov-config=.coveragerc --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --cov-report=html ./epoch_backend/tests/webserver_tests.py
