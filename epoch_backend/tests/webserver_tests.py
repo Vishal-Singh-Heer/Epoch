@@ -318,6 +318,7 @@ class webserver_tests(unittest.TestCase):
         assert (response.status_code == 200)
         print("User with picture registered and deleted.")
 
+    '''
     def register_user(self, i, usernames, passwords, names, bios, session_ids, user_ids, media_ids):
         print(f"Registering user {i}...")
         response = requests.post('http://localhost:8080/api/register/',
@@ -438,7 +439,7 @@ class webserver_tests(unittest.TestCase):
 
         for i in range(EXTREME_TEST_RANGE):
             threads[i].join()
-
+    '''
     def register_test_user(self):
         # create a test account if it already exist log in to it
         response = requests.post('http://localhost:8080/api/register/',
@@ -805,9 +806,13 @@ class webserver_tests(unittest.TestCase):
         response = requests.head('http://localhost:8080/api/vote/post/',
                                 cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 405)
-        
+
     def test_z14_delete_by_username(self):
         self.register_test_user()
+        response = requests.delete('http://localhost:8080/api/delete/username/',
+                                   json={'username': "5834cantfindusername"},
+                                    cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 404)
         response = requests.delete('http://localhost:8080/api/delete/username/',
                                    json={'username': self.username},
                                     cookies={'epoch_session_id': self.get_session_id()})
@@ -841,6 +846,50 @@ class webserver_tests(unittest.TestCase):
 
     def test_z18_user_api_coverage(self):
         pass
+
+    def test_z19_post_with_mentions(self):
+        self.register_test_user()
+        response = requests.post('http://localhost:8080/api/post/', 
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                json={'postText': "test mention @cedric", 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
+                                       'fileType': 'image/jpeg', 'fileName': 'test.jpg', 'postNow': 'true', 'selectedDate': self.post_creation_time,
+                                       'createdAt': self.post_creation_time, 'username': self.username, 'time_zone': '+5:00'})
+        self.assertEqual(response.status_code, 200)
+        response = requests.get('http://localhost:8080/api/user/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id()), 'Offset': '0', 'Limit': '100'})
+        self.assertEqual(response.status_code, 200)
+        response_json = response.json()
+        response = requests.put('http://localhost:8080/api/user/posts/',
+                                    cookies={'epoch_session_id': self.get_session_id()},
+                                    headers={'User-Id': str(self.get_user_id()), 'Offset': '0', 'Limit': '100'},
+                                    json={'postId': response_json[0]["post_id"], 'username': self.username,
+                                          'fileName': '', 'fileType': '', 'file': '', 'postNow': 'true', 'postText': 'updated text #webservertest',
+                                           'selectedDate': self.post_creation_time, 'createdAt': self.post_creation_time, 'oldFileRemoved': 'false'})
+        self.delete_post()
+
+    def test_z20_remove_post(self):
+        self.register_test_user()
+        self.make_post()
+        response = requests.get('http://localhost:8080/api/user/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id()) })
+        self.assertEqual(response.status_code, 200)
+        response_json = response.json()
+        for post in response_json:
+            response = requests.delete('http://localhost:8080/api/user/posts/',
+                                       headers={'Post-Id': str(post["post_id"]), 'User-Id': str(self.get_user_id())})
+            self.assertEqual(response.status_code, 200)
+
+    def test_z21_cors_coverage(self):
+        self.register_test_user()
+        self.make_post()
+        response = requests.options('http://localhost:8080/api/user/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id()) })
+        self.assertEqual(response.status_code, 204)
+        self.delete_post()
+
 
 if __name__ == '__main__':
     unittest.main()
