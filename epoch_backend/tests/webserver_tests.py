@@ -754,6 +754,93 @@ class webserver_tests(unittest.TestCase):
         response = requests.put('http://localhost:8080/api/notifications/read/all/user/',
                                 cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 400)
+    
+    def test_z13_router_coverage(self):
+        # this test just covers the "return 405" lines in router
+        self.register_test_user()
+        response = requests.head('http://localhost:8080/not_api/')
+        self.assertEqual(response.status_code, 404)
+        response = requests.head('http://localhost:8080/api/notfound/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 404)
+        response = requests.head('http://localhost:8080/api/login/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/register/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/delete/userId/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/delete/username/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/user/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/user/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/followed/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/favorite/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/upload/profile/1/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/comments/post/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/comments/post/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/comments/delete/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/comments/get/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        response = requests.head('http://localhost:8080/api/vote/post/',
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 405)
+        
+    def test_z14_delete_by_username(self):
+        self.register_test_user()
+        response = requests.delete('http://localhost:8080/api/delete/username/',
+                                   json={'username': self.username},
+                                    cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
+
+    def test_z15_follow_missing_fields(self):
+        self.register_test_user()
+        response = requests.post('http://localhost:8080/api/follow/followerList/',
+                                   json={'target': str(self.get_user_id())},
+                                    cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
+        response = requests.post('http://localhost:8080/api/follow/followingList/',
+                                   json={'target': str(self.get_user_id())},
+                                    cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
+        response = requests.post('http://localhost:8080/api/follow/follow/',
+                                    cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 500)
+        response = requests.post('http://localhost:8080/api/follow/unfollow/',
+                                    cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 500)
+
+    def test_z16_post_api_coverage(self):
+        self.register_test_user()
+        response = requests.delete('http://localhost:8080/api/user/posts/',
+                                       headers={'Post-Id': "912991398934", 'User-Id': str(self.get_user_id())})
+        self.assertEqual(response.status_code, 404)
+
+    def test_z17_comment_api_coverage(self):
+        pass
+
+    def test_z18_user_api_coverage(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

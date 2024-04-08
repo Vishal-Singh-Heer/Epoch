@@ -66,9 +66,6 @@ def handle_api_request(method, path, request_data, conn):
             session_id = get_session_id_from_request(request_data)
             get_user(conn, request_data, session_id)
 
-        elif method == "DELETE":
-            pass  # log out logic
-
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
