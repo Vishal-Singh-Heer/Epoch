@@ -12,6 +12,7 @@ import {getUserInfo} from "../services/user";
 import CommentPopup from "../modules/CommentPopup";
 import {useNavigate} from "react-router-dom";
 import NoSessionNavBar from "../modules/NoSessionNavBar";
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import Feed from "../modules/Feed";
 
 
@@ -27,6 +28,9 @@ function Comments() {
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [showNewCommentPopup, setShowNewCommentPopup] = useState(false);
     const [refreshComments, setRefreshComments] = useState(false);
+    const [mentionedUsers, setMentionedUsers] = useState([]);
+    const [failedToFetchUser, setFailedToFetchUser] = useState(false);
+    const [fetchedPost, setFetchedPost] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,9 +39,14 @@ function Comments() {
             getUserInfo()
                 .then(data => {
                     updateUser(data);
+                    setFailedToFetchUser(false);
                 })
                 .catch(error => {
                     updateUser(null);
+                    setFailedToFetchUser(true);
+                    if(mentionedUsers.length > 0 && fetchedPost){
+                        navigate('/epoch/login')
+                    }
                 });
 
         }
@@ -50,6 +59,26 @@ function Comments() {
             setIsLoading(true);
             getAllComments(postId)
                 .then(data => {
+                    const usernames = [];
+                    const regex = /@([a-zA-Z0-9_]+)/g;
+            
+                    if (data.post.caption) {
+                        const matches = data.post.caption.match(regex);
+            
+                        if (matches) {
+                            for (let i = 0; i < matches.length; i++) {
+                                usernames.push(matches[i].substring(1));
+                            }
+                        }
+                    }
+                    setMentionedUsers(usernames);
+
+                    if(usernames.length > 0 && user === null && failedToFetchUser){
+                        navigate('/epoch/login')
+                    }
+                        
+                    setFetchedPost(true);
+
                     setCommentsPost(data.post);
                     setComments(data.comments);
                     setRefreshComments(false);
@@ -59,6 +88,7 @@ function Comments() {
                     console.log(error)
                     setRefreshComments(false);
                     setIsLoading(false);
+                    setFetchedPost(false);
                     navigate('/epoch/login')
                 })
         }
@@ -73,13 +103,35 @@ function Comments() {
         if (postId !== -1) {
             getAllComments(postId)
                 .then(data => {
+                    
+                    const usernames = [];
+                    const regex = /@([a-zA-Z0-9_]+)/g;
+            
+                    if (data.post.caption) {
+                        const matches = data.post.caption.match(regex);
+            
+                        if (matches) {
+                            for (let i = 0; i < matches.length; i++) {
+                                usernames.push(matches[i].substring(1));
+                            }
+                        }
+                    }
+                    setMentionedUsers(usernames);
+
+                    if(usernames.length > 0 && user === null && failedToFetchUser){
+                        navigate('/epoch/login')
+                    }
+                        
+                    setFetchedPost(true);
+
                     setCommentsPost(data.post);
                     setComments(data.comments);
                     setIsLoading(false);
                 })
                 .catch(error => {
-                    console.log(error)
+                    console.log(error);
                     setIsLoading(false);
+                    setFetchedPost(false);
                     navigate('/epoch/login')
                 })
         }
@@ -140,7 +192,7 @@ function Comments() {
             )}
 
             {user && (<PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup} username={user.username}
-                       profilePic={user.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>)}
+                       profilePic={user.profile_pic_data} refreshFeed={refreshComments} setRefreshFeed={setRefreshComments}/>)}
 
             {user && (<CommentPopup showPopup={showNewCommentPopup} setShowPopup={setShowNewCommentPopup} postId={postId}
                           username={user.username} profilePic={user.profile_pic_data} refreshComments={refreshComments}

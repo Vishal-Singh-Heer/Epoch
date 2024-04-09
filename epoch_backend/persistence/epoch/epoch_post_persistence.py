@@ -229,7 +229,7 @@ class epoch_post_persistence(post_persistence):
     def get_followed_users_posts(self, user_id: int, offset: int, limit: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM posts WHERE user_id IN (SELECT following_id FROM following WHERE user_id = %s) ORDER BY created_at DESC LIMIT %s OFFSET %s", (user_id, limit, offset))
+        cursor.execute("SELECT * FROM posts WHERE user_id = %s OR user_id IN (SELECT following_id FROM following WHERE user_id = %s) ORDER BY created_at DESC LIMIT %s OFFSET %s", (user_id, user_id, limit, offset))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)
