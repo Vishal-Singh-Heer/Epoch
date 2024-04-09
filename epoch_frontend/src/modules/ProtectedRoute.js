@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import { UserContext } from '../services/UserContext';
+
 
 // Utility function to get the "epoch_session_id" cookie
 export function getSessionCookie() {
@@ -21,8 +20,7 @@ const ProtectedRoute = ({ children }) => {
     useEffect(() => {
         // Check if the session is active; if not, redirect to the login page
         if (!isSessionActive()) {
-            const { updateUser } = useContext(UserContext);
-            updateUser(null);
+
             navigate('/epoch/login');
         }
     }, [navigate]);
