@@ -1,7 +1,8 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, useContext} from 'react';
 import {updateUser} from '../services/user';
 import '../styles/EditProfilePopup.css';
 import {useSpring, animated} from 'react-spring';
+
 
 function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfilePopup, refreshProfile, setRefreshProfile, profilePicId, profilePicUrl, profilePicName, profilePicType, backgroundPicId, backgroundPicUrl, backgroundPicName, backgroundPicType}) {
     const [formData, setFormData] = useState({
@@ -44,7 +45,6 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const newPasswordRef = useRef(null);
     const maxImageBytes = 30000001;
     const allowedFileTypes = ["jpg", "jpeg", "png", "gif", "HEIC", "JPG", "JPEG", "PNG", "GIF", "heic"];
-
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
         opacity: showEditProfilePopup ? 1 : 0,

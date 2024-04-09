@@ -69,32 +69,7 @@ function NotificationItem({notification, setShowNotifications, onRead}) {
 
 
     const isNotificationVisible = () => {
-        let toReturn = true;
-
-        if(notification) {
-            if(notification.type === 'mention') {
-                getAllComments(notification.target_id)
-                .then(data => {
-                    let thePost = data.post;
-
-                    const now = new Date();
-                    let postTime = new Date(thePost.release);
-                    postTime = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds()));
-                    let isInPast = now >= postTime;
-
-                    if (!isInPast) {
-                        toReturn = false;
-                    }
-                })
-                 .catch(error => {
-                    toReturn = false;
-                })
-
-                
-            }
-        }
-
-        return toReturn;
+        return true;
     }
 
 

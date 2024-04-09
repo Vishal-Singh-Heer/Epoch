@@ -52,7 +52,7 @@ class epoch_post_persistence(post_persistence):
                     mentioned_notification = cursor.fetchone()
 
                     if not mentioned_notification and mentioned_user[0] != new_post.user_id:
-                        cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, user_info[0], user_info[1]))
+                        cursor.execute("INSERT INTO notifications (user_id, type, target_id, created_at, target_username, target_name) VALUES (%s, %s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, new_post.release, user_info[0], user_info[1]))
                         connection.commit()
 
 
@@ -205,7 +205,7 @@ class epoch_post_persistence(post_persistence):
                     mentioned_notification = cursor.fetchone()
 
                     if not mentioned_notification and mentioned_user[0] != new_post.user_id:
-                        cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, user_info[0], user_info[1]))
+                        cursor.execute("INSERT INTO notifications (user_id, type, target_id, created_at, target_username, target_name) VALUES (%s, %s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, new_post.release, user_info[0], user_info[1]))
                         connection.commit()
 
         if old_post_caption:

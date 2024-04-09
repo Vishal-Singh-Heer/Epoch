@@ -266,7 +266,6 @@ function Profile() {
                 .catch(error => {
                     console.log("Error fetching user info:", error);
                     setIsLoading(false);
-
                 });
         }
     }, [refreshProfile, setRefreshProfile, updateUser]);
