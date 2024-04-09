@@ -12,7 +12,7 @@ import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../ser
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 
-export default function Post({post, postViewer, isInFavorites, setShowDeletePostPopup, setPostToDelete, setShowFavoritedByList, setShowVoteByList, favoritedByUsernameList, voteByUsernameList, setFavoritedByUsernameList, setVoteByUsernameList, showPostPopup, setShowPostPopup, setReleaseMonth, setReleaseDay, setReleaseYear, setReleaseHour, setReleaseMinute, setReleaseSecond, setFileBlob, setPostToEditId, setPostToEditCaption, setPostToEdit}) {
+export default function Post({post, postViewer, isInFavorites, setShowDeletePostPopup, setPostToDelete, setShowFavoritedByList, setShowVoteByList, favoritedByUsernameList, voteByUsernameList, setFavoritedByUsernameList, setVoteByUsernameList, showPostPopup, setShowPostPopup, setReleaseMonth, setReleaseDay, setReleaseYear, setReleaseHour, setReleaseMinute, setReleaseSecond, setFileBlob, setPostToEditId, setPostToEditCaption, setPostToEdit, isInComments}) {
     const captionCharLimit = 240;
     const timeAllowedToEditInSeconds = 30;
     const [editable, setEditable] = useState(false);
@@ -39,6 +39,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
     const [localFinalVoteByUsernameList, setLocalFinalVoteByUsernameList] = useState(voteByUsernameList);
     const [copiedMessage, setCopiedMessage] = useState('');
     const [isMobile, setIsMobile] = useState( window.innerWidth <= 768);
+    const [notVisibleReason, setNotVisibleReason] = useState(null);
 
 
     useEffect(() => {
@@ -227,6 +228,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                     for (let i = 0; i < usernames.length && !visible; i++) {
                         if (postViewer && postViewer.username === usernames[i]) {
                             visible = true;
+                            setNotVisibleReason(null);
                         }
                     }
 
@@ -234,12 +236,30 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                     {
                         visible = postAdmin;
                     }
+
+                    if (!visible)
+                    {
+                        setNotVisibleReason('You can not see this post because is is not dedicated to you.');
+                    }
+                    else
+                    {
+                        setNotVisibleReason(null);
+                    }
                 }
                 else
                 {
                     visible = true;
+                    setNotVisibleReason(null);
                 }
             }
+            else
+            {
+                setNotVisibleReason('You can not see this post because it is not in your favorites.');
+            }
+        }
+        else
+        {
+            setNotVisibleReason('You can not see this post because it is not released yet.\n' + (post.release ? ' Release: ' + getReleaseFormat() : ''));
         }
 
 
@@ -630,6 +650,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
     }, []);
 
     return (
+        <>
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
              style={{display: ( isPostVisible() ) ? 'block' : 'none'}}>
             <div className="post-header">
@@ -769,5 +790,31 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                 )}
             </div>
         </div>
+
+            {isInComments && notVisibleReason && (
+                <div className={`post`} >
+                    <div className="post-header">
+                        <div className="post-header-left">
+                            <div className={'profile-photo-container'}
+                                 onClick={() => handleProfilePhotoClick(post.profile_picture)}>
+                                <SmartMedia fileUrl={post.profile_picture} file_type={post.profile_picture_type}
+                                            file_name={post.profile_picture_name} alt="Profile" className="profile-photo"/>
+                            </div>
+                            <div className="post-header-info">
+                                <h3 className={'post-username'}
+                                    onClick={() => navigateToProfile()}>{post.username}</h3>
+                                <p className={'post-date'}>{getReleaseFormat()}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="post-body">
+                        <h1>{notVisibleReason}</h1>
+                    </div>
+
+
+                </div>
+                )}
+        </>
     );
 }

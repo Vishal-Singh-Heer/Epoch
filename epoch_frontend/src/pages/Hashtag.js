@@ -58,12 +58,12 @@ function Hashtag() {
                                 <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false}
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={null} isInFavorites={false} hashtag={hashtag} isInHashtags={true}/>
+                                      setRefreshFeed={setRefreshFeed} posts={null} isInFavorites={false} hashtag={hashtag} isInHashtags={true} isInComments={false}/>
                             ) : (
                                 <Feed feedUsername={null} feedUserId={null} isInProfile={false} currentUser={null}
                                       showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}
                                       refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={true}
-                                      posts={null} isInFavorites={false} isInHashtags={true} hashtag={hashtag}/>
+                                      posts={null} isInFavorites={false} isInHashtags={true} hashtag={hashtag} isInComments={false}/>
                             )}
                         </div>
                     </div>

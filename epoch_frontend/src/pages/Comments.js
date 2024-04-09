@@ -110,7 +110,7 @@ function Comments() {
                                               setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshComments}
                                               setRefreshFeed={setRefreshComments} viewingOnly={true}
                                               posts={[commentsPost]} isInFavorites={false} isInHashtags={false}
-                                              hashtag={null}></Feed>
+                                              hashtag={null} isInComments={true}></Feed>
                                     )}
                                 </div>
 

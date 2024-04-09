@@ -29,7 +29,8 @@ export default function Feed({
                                  posts,
                                  isInFavorites,
                                  isInHashtags,
-                                 hashtag
+                                 hashtag,
+                                 isInComments
                              }) {
 
     const [isLoading, setIsLoading] = useState(true);
@@ -372,7 +373,8 @@ export default function Feed({
                                       setFileBlob={setFileBlob}
                                       setPostToEditId={setPostToEditId}
                                       setPostToEditCaption={setPostToEditCaption}
-                                      setPostToEdit={setPostToEdit}/>
+                                      setPostToEdit={setPostToEdit}
+                                      isInComments={isInComments}/>
 
                             ))
                         )}

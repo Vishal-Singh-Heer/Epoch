@@ -52,7 +52,7 @@ function Favorites() {
                                            currentUser={user} showNewPostPopup={showNewPostPopup}
                                            setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
                                            setRefreshFeed={setRefreshFeed}
-                                           isInFavorites={true}/>) : (<></>)}
+                                           isInFavorites={true} isInComments={false}/>) : (<></>)}
                         </div>
                     </div>
                     {user ? (<PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
