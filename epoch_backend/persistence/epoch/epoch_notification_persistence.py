@@ -11,7 +11,7 @@ class epoch_notification_persistence(notification_persistence):
         conn = get_db_connection()
         curr = conn.cursor()
 
-        curr.execute("SELECT * FROM notifications WHERE user_id = %s AND created_at > now() ORDER BY created_at DESC LIMIT %s OFFSET %s", (user_id, limit, offset))
+        curr.execute("SELECT * FROM notifications WHERE user_id = %s ORDER BY created_at DESC LIMIT %s OFFSET %s", (user_id, limit, offset))
         notifs = curr.fetchall()
 
         for i in range(len(notifs)):
