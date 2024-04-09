@@ -61,7 +61,7 @@ function Home() {
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
                                       setRefreshFeed={setRefreshFeed} viewingOnly={false} posts={null}
-                                      isInFavorites={false}/>
+                                      isInFavorites={false} isInComments={false}/>
                             </div>
                         </div>
                     </div>

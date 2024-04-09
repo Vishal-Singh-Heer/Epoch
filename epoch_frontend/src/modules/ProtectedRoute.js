@@ -20,7 +20,6 @@ const ProtectedRoute = ({ children }) => {
     useEffect(() => {
         // Check if the session is active; if not, redirect to the login page
         if (!isSessionActive()) {
-
             navigate('/epoch/login');
         }
     }, [navigate]);

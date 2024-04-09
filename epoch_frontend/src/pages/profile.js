@@ -400,13 +400,13 @@ function Profile() {
                             <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true}
                                   currentUser={user} showNewPostPopup={showNewPostPopup}
                                   setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                  setRefreshFeed={setRefreshFeed} posts={null} isInFavorites={false}/>
+                                  setRefreshFeed={setRefreshFeed} posts={null} isInFavorites={false} isInComments={false}/>
                         ) : (
                             <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true}
                                   currentUser={null} showNewPostPopup={showNewPostPopup}
                                   setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
                                   setRefreshFeed={setRefreshFeed} viewingOnly={true} posts={null}
-                                  isInFavorites={false}/>
+                                  isInFavorites={false} isInComments={false}/>
                         )}
                     </div>
                 </div>
