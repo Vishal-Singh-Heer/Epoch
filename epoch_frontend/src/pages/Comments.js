@@ -167,9 +167,7 @@ function Comments() {
                                 </div>
 
                                 {user && (<button className={`new-comment-button ${showNewCommentPopup ? 'rotate' : ''}`}
-                                          onClick={() => setShowNewCommentPopup(!showNewCommentPopup)}>{
-                                            `${showNewCommentPopup ? '+' : <ForumOutlinedIcon></ForumOutlinedIcon>}`
-                                          }</button>)}
+                                          onClick={() => setShowNewCommentPopup(!showNewCommentPopup)}>+</button>)}
 
                                 {comments && comments.length === 0 &&
                                     <div className={"no-comments"}>No comments yet</div>}
