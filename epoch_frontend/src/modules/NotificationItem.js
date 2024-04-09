@@ -8,6 +8,7 @@ import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithou
 import React from "react";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
+import { getAllComments } from '../services/comments';
 import '../styles/NotificationItem.css';
 
 function NotificationItem({notification, setShowNotifications, onRead}) {
@@ -67,10 +68,39 @@ function NotificationItem({notification, setShowNotifications, onRead}) {
     }, [notification]);
 
 
+    const isNotificationVisible = () => {
+        let toReturn = true;
+
+        if(notification) {
+            if(notification.type === 'mention') {
+                getAllComments(notification.target_id)
+                .then(data => {
+                    let thePost = data.post;
+
+                    const now = new Date();
+                    let postTime = new Date(thePost.release);
+                    postTime = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds()));
+                    let isInPast = now >= postTime;
+
+                    if (!isInPast) {
+                        toReturn = false;
+                    }
+                })
+                 .catch(error => {
+                    toReturn = false;
+                })
+
+                
+            }
+        }
+
+        return toReturn;
+    }
 
 
     return (
-        <div className={`notification-item-container ${notificationRead ? 'notification-read' : 'notification-unread'}`} onClick={() => {
+        <div className={`notification-item-container ${notificationRead ? 'notification-read' : 'notification-unread'}`} style={{display: ( isNotificationVisible() ) ? 'block' : 'none'}}
+         onClick={() => {
             navigate(notificationActionLink);
             setNotificationRead(true);
             onRead(notification.notif_id);

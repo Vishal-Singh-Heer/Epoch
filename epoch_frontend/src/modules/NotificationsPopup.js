@@ -168,6 +168,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
     }
 
 
+
     return (
         <animated.div
             style={{
