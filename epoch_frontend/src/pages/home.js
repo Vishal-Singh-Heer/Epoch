@@ -54,6 +54,7 @@ function Home() {
                 <Spinner/>
             ) : (
                 <>
+                <h1>Hello test demo</h1>
                     <div className="home-page-container">
                         <div className="home-feed-wrapper">
                             <div className="home-feed" data-testid={"home-feed"} id={"home-feed"}>
