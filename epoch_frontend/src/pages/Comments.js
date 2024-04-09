@@ -3,7 +3,6 @@ import {Spinner} from '../modules/Spinner';
 import {getAllComments} from '../services/comments'
 import NavBar from "../modules/NavBar";
 import PostPopup from "../modules/PostPopup";
-import Post from '../modules/Post'
 import {useLocation} from 'react-router-dom';
 import Comment from '../modules/Comment';
 import '../styles/PostComments.css'
@@ -28,9 +27,6 @@ function Comments() {
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [showNewCommentPopup, setShowNewCommentPopup] = useState(false);
     const [refreshComments, setRefreshComments] = useState(false);
-    const [mentionedUsers, setMentionedUsers] = useState([]);
-    const [failedToFetchUser, setFailedToFetchUser] = useState(false);
-    const [fetchedPost, setFetchedPost] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,14 +35,9 @@ function Comments() {
             getUserInfo()
                 .then(data => {
                     updateUser(data);
-                    setFailedToFetchUser(false);
                 })
                 .catch(error => {
                     updateUser(null);
-                    setFailedToFetchUser(true);
-                    if(mentionedUsers.length > 0 && fetchedPost){
-                        navigate('/epoch/login')
-                    }
                 });
 
         }
@@ -59,26 +50,6 @@ function Comments() {
             setIsLoading(true);
             getAllComments(postId)
                 .then(data => {
-                    const usernames = [];
-                    const regex = /@([a-zA-Z0-9_]+)/g;
-            
-                    if (data.post.caption) {
-                        const matches = data.post.caption.match(regex);
-            
-                        if (matches) {
-                            for (let i = 0; i < matches.length; i++) {
-                                usernames.push(matches[i].substring(1));
-                            }
-                        }
-                    }
-                    setMentionedUsers(usernames);
-
-                    if(usernames.length > 0 && user === null && failedToFetchUser){
-                        navigate('/epoch/login')
-                    }
-                        
-                    setFetchedPost(true);
-
                     setCommentsPost(data.post);
                     setComments(data.comments);
                     setRefreshComments(false);
@@ -88,7 +59,6 @@ function Comments() {
                     console.log(error)
                     setRefreshComments(false);
                     setIsLoading(false);
-                    setFetchedPost(false);
                     navigate('/epoch/login')
                 })
         }
@@ -103,27 +73,6 @@ function Comments() {
         if (postId !== -1) {
             getAllComments(postId)
                 .then(data => {
-                    
-                    const usernames = [];
-                    const regex = /@([a-zA-Z0-9_]+)/g;
-            
-                    if (data.post.caption) {
-                        const matches = data.post.caption.match(regex);
-            
-                        if (matches) {
-                            for (let i = 0; i < matches.length; i++) {
-                                usernames.push(matches[i].substring(1));
-                            }
-                        }
-                    }
-                    setMentionedUsers(usernames);
-
-                    if(usernames.length > 0 && user === null && failedToFetchUser){
-                        navigate('/epoch/login')
-                    }
-                        
-                    setFetchedPost(true);
-
                     setCommentsPost(data.post);
                     setComments(data.comments);
                     setIsLoading(false);
@@ -131,7 +80,6 @@ function Comments() {
                 .catch(error => {
                     console.log(error);
                     setIsLoading(false);
-                    setFetchedPost(false);
                     navigate('/epoch/login')
                 })
         }
@@ -145,7 +93,7 @@ function Comments() {
     return (
         <>
             {user ? (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                     showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={user.id}/>) : (
+                     showNewPostPopup={showNewCommentPopup} setShowNewPostPopup={setShowNewCommentPopup} userId={user.id}/>) : (
                 <NoSessionNavBar></NoSessionNavBar>)}
             {isLoading ? (
                 <Spinner/>
@@ -167,7 +115,9 @@ function Comments() {
                                 </div>
 
                                 {user && (<button className={`new-comment-button ${showNewCommentPopup ? 'rotate' : ''}`}
-                                          onClick={() => setShowNewCommentPopup(!showNewCommentPopup)}>+</button>)}
+                                          onClick={() => setShowNewCommentPopup(!showNewCommentPopup)}>{
+                                        showNewCommentPopup ? '+' : <ForumOutlinedIcon className={"new-comment-icon"}/>
+                                    }</button>)}
 
                                 {comments && comments.length === 0 &&
                                     <div className={"no-comments"}>No comments yet</div>}
