@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import SmartMedia from "./SmartMedia";
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
@@ -154,12 +154,12 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
         }
     }, [post.caption]);
 
-    const postIsInThePast = () => {
+    const postIsInThePast = useCallback(() => {
         const now = new Date();
         let postTime = new Date(post.release);
         postTime = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds()));
         return now >= postTime;
-    }
+    }, [post.release]);
 
     const toggleCaptionVisibility = () => {
         setShowFullCaption(!showFullCaption);
@@ -201,7 +201,7 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
         return <div>{elements}</div>;
     };
 
-    const gotUsersMentioned = () => {
+    const gotUsersMentioned = useCallback(() => {
         const usernames = [];
         const regex = /@([a-zA-Z0-9_]+)/g;
 
@@ -216,9 +216,10 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
         }
 
         return usernames;
-    }
+    }, [post.caption]);
 
-    const isPostVisible = () => {
+    // useCallback for isPostVisible
+    const isPostVisible = useCallback(() => {
         const usernames = gotUsersMentioned();
         let visible = false;
 
@@ -228,7 +229,6 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                     for (let i = 0; i < usernames.length && !visible; i++) {
                         if (postViewer && postViewer.username === usernames[i]) {
                             visible = true;
-                            setNotVisibleReason(null);
                         }
                     }
 
@@ -236,36 +236,16 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
                     {
                         visible = postAdmin;
                     }
-
-                    if (!visible)
-                    {
-                        setNotVisibleReason('You can not see this post because is is not dedicated to you.');
-                    }
-                    else
-                    {
-                        setNotVisibleReason(null);
-                    }
                 }
                 else
                 {
                     visible = true;
-                    setNotVisibleReason(null);
                 }
             }
-            else
-            {
-                setNotVisibleReason('You can not see this post because it is not in your favorites.');
-            }
         }
-        else
-        {
-            setNotVisibleReason('You can not see this post because it is not released yet.\n' + (post.release ? ' Release: ' + getReleaseFormat() : ''));
-        }
-
-
 
         return visible;
-    }
+    }, [post, postViewer, favorited, isInFavorites, gotUsersMentioned, postIsInThePast, postAdmin]);
 
 
 
@@ -648,6 +628,51 @@ export default function Post({post, postViewer, isInFavorites, setShowDeletePost
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    //create a useEffect to update the not visible reason if isPostVisible changes
+    useEffect(() => {
+        const usernames = gotUsersMentioned();
+        let visible = false;
+
+        if (postIsInThePast() || postAdmin) {
+            if ( (isInFavorites && favorited) || !isInFavorites) {
+                if (usernames.length > 0) {
+                    for (let i = 0; i < usernames.length && !visible; i++) {
+                        if (postViewer && postViewer.username === usernames[i]) {
+                            visible = true;
+                            setNotVisibleReason(null);
+                        }
+                    }
+
+                    if (!visible)
+                    {
+                        visible = postAdmin;
+                    }
+
+                    if (!visible)
+                    {
+                        setNotVisibleReason('You can not see this post because is is not dedicated to you.');
+                    }
+                    else
+                    {
+                        setNotVisibleReason(null);
+                    }
+                }
+                else
+                {
+                    setNotVisibleReason(null);
+                }
+            }
+            else
+            {
+                setNotVisibleReason('You can not see this post because it is not in your favorites.');
+            }
+        }
+        else
+        {
+            setNotVisibleReason('You can not see this post because it is not released yet.\n' + (post.release ? ' Release: ' + getReleaseFormat() : ''));
+        }
+    }, [isPostVisible]);
 
     return (
         <>
